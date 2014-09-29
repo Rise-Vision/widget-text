@@ -27,6 +27,10 @@
     .wysihtml5-sandbox {
       min-height: 50%;
     }
+
+    .translate-cloak {
+      display: none;
+    }
   </style>
 </head>
 <body ng-app="risevision.widget.text.settings" ng-controller="settingsController">
@@ -34,7 +38,7 @@
     <div class="overlay"></div>
     <div class="settings">
       <div class="settings-center">
-        <div class="wrapper container modal-content" ng-controller="textSettingsController">
+        <div class="wrapper container modal-content" ng-controller="textSettingsController" translate-cloak>
           <div class="modal-header">
             <h2 id="settings-title"> {{"settings" | translate }}
               <button type="button" ng-click="closeSettings()" class="close">
