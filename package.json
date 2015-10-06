@@ -16,6 +16,7 @@
   "bucket": "widget-text",
   "homepage": "https://github.com/Rise-Vision/widget-text",
   "devDependencies": {
+    "bower": "^1.5.3",
     "chai": "^2.1.2",
     "chai-as-promised": "^4.3.0",
     "del": "~1.1.1",
@@ -30,9 +31,7 @@
     "gulp-util": "~2.2.17",
     "gulp-watch": "^0.6.8",
     "jshint-stylish": "^0.2.0",
-    "mocha": "^2.1.0",
     "phantomjs": "1.9.15",
-    "protractor": "~1.0.0",
     "run-sequence": "^0.3.2",
     "widget-tester": "git://github.com/Rise-Vision/widget-tester.git"
   }
