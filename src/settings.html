@@ -6,7 +6,7 @@
   <title>Text Settings</title>
 
   <!-- build:css css/settings.min.css -->
-  <link rel="stylesheet" href="components/common-style/dist/css/rise.min.css">
+  <link rel="stylesheet" href="components/rv-common-style/dist/css/rise.min.css">
   <link rel="stylesheet" href="components/spectrum/spectrum.css">
   <link rel="stylesheet" href="components/bootstrap3-wysihtml5/dist/css/bootstrap3-wysihtml5.min.css">
   <link rel="stylesheet" href="components/rv-bootstrap-formhelpers/dist/css/rv-bootstrap-formhelpers.min.css">
@@ -14,7 +14,7 @@
   <!-- endbuild -->
 
   <!-- build:css css/editor.min.css -->
-  <link rel="stylesheet" href="components/common-style/dist/css/alignment.min.css">
+  <link rel="stylesheet" href="components/rv-common-style/dist/css/alignment.min.css">
   <link rel="stylesheet" href="components/bootstrap-form-components/dist/css/all.min.css">
   <link rel="stylesheet" href="components/bootstrap3-wysihtml5/dist/css/bootstrap3-wysihtml5-line-height.min.css">
   <!-- endbuild -->
@@ -38,7 +38,7 @@
     <div class="overlay"></div>
     <div class="settings">
       <div class="settings-center">
-        <div class="wrapper container modal-content" ng-controller="textSettingsController">
+        <div class="wrapper container modal-content" ng-controller="textSettingsController" ng-cloak>
           <div class="modal-header">
             <h2 id="settings-title"> {{"widget-text.settings" | translate }}
               <button type="button" ng-click="closeSettings()" class="close">

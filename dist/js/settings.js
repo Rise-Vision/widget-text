@@ -4479,7 +4479,7 @@ angular.module("risevision.common.i18n", ["pascalprecht.translate", "risevision.
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.0 - 2014-05-01
+ * Version: 0.11.2 - 2014-09-26
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -5224,7 +5224,7 @@ angular.module('ui.bootstrap.dateparser', [])
     }
   };
 
-  this.createParser = function(format) {
+  function createParser(format) {
     var map = [], regex = format.split('');
 
     angular.forEach(formatCodeToRegex, function(data, code) {
@@ -5249,17 +5249,17 @@ angular.module('ui.bootstrap.dateparser', [])
       regex: new RegExp('^' + regex.join('') + '$'),
       map: orderByFilter(map, 'index')
     };
-  };
+  }
 
   this.parse = function(input, format) {
-    if ( !angular.isString(input) ) {
+    if ( !angular.isString(input) || !format ) {
       return input;
     }
 
     format = $locale.DATETIME_FORMATS[format] || format;
 
     if ( !this.parsers[format] ) {
-      this.parsers[format] = this.createParser(format);
+      this.parsers[format] = createParser(format);
     }
 
     var parser = this.parsers[format],
@@ -5485,7 +5485,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.dateparser', 'ui.bootst
     self[key] = angular.isDefined($attrs[key]) ? (index < 8 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) : datepickerConfig[key];
   });
 
-  // Watchable attributes
+  // Watchable date attributes
   angular.forEach(['minDate', 'maxDate'], function( key ) {
     if ( $attrs[key] ) {
       $scope.$parent.$watch($parse($attrs[key]), function(value) {
@@ -5932,12 +5932,24 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
         });
       }
 
-      angular.forEach(['minDate', 'maxDate'], function( key ) {
+      scope.watchData = {};
+      angular.forEach(['minDate', 'maxDate', 'datepickerMode'], function( key ) {
         if ( attrs[key] ) {
-          scope.$parent.$watch($parse(attrs[key]), function(value){
-            scope[key] = value;
+          var getAttribute = $parse(attrs[key]);
+          scope.$parent.$watch(getAttribute, function(value){
+            scope.watchData[key] = value;
           });
-          datepickerEl.attr(cameltoDash(key), key);
+          datepickerEl.attr(cameltoDash(key), 'watchData.' + key);
+
+          // Propagate changes from datepicker to outside
+          if ( key === 'datepickerMode' ) {
+            var setAttribute = getAttribute.assign;
+            scope.$watch('watchData.' + key, function(value, oldvalue) {
+              if ( value !== oldvalue ) {
+                setAttribute(scope.$parent, value);
+              }
+            });
+          }
         }
       });
       if (attrs.dateDisabled) {
@@ -6048,6 +6060,9 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
       };
 
       var $popup = $compile(popupEl)(scope);
+      // Prevent jQuery cache memory leak (template is now redundant after linking)
+      popupEl.remove();
+
       if ( appendToBody ) {
         $document.find('body').append($popup);
       } else {
@@ -6109,7 +6124,8 @@ angular.module('ui.bootstrap.dropdown', [])
   };
 
   var closeDropdown = function( evt ) {
-    if (evt && evt.isDefaultPrevented()) {
+    var toggleElement = openScope.getToggleElement();
+    if ( evt && toggleElement && toggleElement[0].contains(evt.target) ) {
         return;
     }
 
@@ -6154,6 +6170,10 @@ angular.module('ui.bootstrap.dropdown', [])
   // Allow other directives to watch status
   this.isOpen = function() {
     return scope.isOpen;
+  };
+
+  scope.getToggleElement = function() {
+    return self.toggleElement;
   };
 
   scope.focusToggleElement = function() {
@@ -6297,7 +6317,8 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       restrict: 'EA',
       replace: true,
       templateUrl: 'template/modal/backdrop.html',
-      link: function (scope) {
+      link: function (scope, element, attrs) {
+        scope.backdropClass = attrs.backdropClass || '';
 
         scope.animate = false;
 
@@ -6328,8 +6349,18 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         $timeout(function () {
           // trigger CSS transitions
           scope.animate = true;
-          // focus a freshly-opened modal
-          element[0].focus();
+
+          /**
+           * Auto-focusing of a freshly-opened modal element causes any child elements
+           * with the autofocus attribute to loose focus. This is an issue on touch
+           * based devices which will show and then hide the onscreen keyboard.
+           * Attempts to refocus the autofocus element via JavaScript will not reopen
+           * the onscreen keyboard. Fixed by updated the focusing logic to only autofocus
+           * the modal element if the modal does not contain an autofocus element.
+           */
+          if (!element[0].querySelectorAll('[autofocus]').length) {
+            element[0].focus();
+          }
         });
 
         scope.close = function (evt) {
@@ -6343,6 +6374,17 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       }
     };
   }])
+
+  .directive('modalTransclude', function () {
+    return {
+      link: function($scope, $element, $attrs, controller, $transclude) {
+        $transclude($scope.$parent, function(clone) {
+          $element.empty();
+          $element.append(clone);
+        });
+      }
+    };
+  })
 
   .factory('$modalStack', ['$transition', '$timeout', '$document', '$compile', '$rootScope', '$$stackedMap',
     function ($transition, $timeout, $document, $compile, $rootScope, $$stackedMap) {
@@ -6415,7 +6457,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
           });
         } else {
           // Ensure this call is async
-          $timeout(afterAnimating, 0);
+          $timeout(afterAnimating);
         }
 
         function afterAnimating() {
@@ -6460,7 +6502,9 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         if (currBackdropIndex >= 0 && !backdropDomEl) {
           backdropScope = $rootScope.$new(true);
           backdropScope.index = currBackdropIndex;
-          backdropDomEl = $compile('<div modal-backdrop></div>')(backdropScope);
+          var angularBackgroundDomEl = angular.element('<div modal-backdrop></div>');
+          angularBackgroundDomEl.attr('backdrop-class', modal.backdropClass);
+          backdropDomEl = $compile(angularBackgroundDomEl)(backdropScope);
           body.append(backdropDomEl);
         }
 
@@ -6480,17 +6524,17 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.close = function (modalInstance, result) {
-        var modalWindow = openedWindows.get(modalInstance).value;
+        var modalWindow = openedWindows.get(modalInstance);
         if (modalWindow) {
-          modalWindow.deferred.resolve(result);
+          modalWindow.value.deferred.resolve(result);
           removeModalWindow(modalInstance);
         }
       };
 
       $modalStack.dismiss = function (modalInstance, reason) {
-        var modalWindow = openedWindows.get(modalInstance).value;
+        var modalWindow = openedWindows.get(modalInstance);
         if (modalWindow) {
-          modalWindow.deferred.reject(reason);
+          modalWindow.value.deferred.reject(reason);
           removeModalWindow(modalInstance);
         }
       };
@@ -6524,14 +6568,15 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
 
           function getTemplatePromise(options) {
             return options.template ? $q.when(options.template) :
-              $http.get(options.templateUrl, {cache: $templateCache}).then(function (result) {
-                return result.data;
+              $http.get(angular.isFunction(options.templateUrl) ? (options.templateUrl)() : options.templateUrl,
+                {cache: $templateCache}).then(function (result) {
+                  return result.data;
               });
           }
 
           function getResolvePromises(resolves) {
             var promisesArr = [];
-            angular.forEach(resolves, function (value, key) {
+            angular.forEach(resolves, function (value) {
               if (angular.isFunction(value) || angular.isArray(value)) {
                 promisesArr.push($q.when($injector.invoke(value)));
               }
@@ -6587,6 +6632,9 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
                 });
 
                 ctrlInstance = $controller(modalOptions.controller, ctrlLocals);
+                if (modalOptions.controllerAs) {
+                  modalScope[modalOptions.controllerAs] = ctrlInstance;
+                }
               }
 
               $modalStack.open(modalInstance, {
@@ -6595,6 +6643,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
                 content: tplAndVars[0],
                 backdrop: modalOptions.backdrop,
                 keyboard: modalOptions.keyboard,
+                backdropClass: modalOptions.backdropClass,
                 windowClass: modalOptions.windowClass,
                 windowTemplateUrl: modalOptions.windowTemplateUrl,
                 size: modalOptions.size
@@ -7905,7 +7954,7 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
   .factory('typeaheadParser', ['$parse', function ($parse) {
 
   //                      00000111000000000000022200000000000000003333333333333330000000000044000
-  var TYPEAHEAD_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/;
+  var TYPEAHEAD_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+([\s\S]+?)$/;
 
   return {
     parse:function (input) {
@@ -8071,6 +8120,18 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
       //Declare the timeout promise var outside the function scope so that stacked calls can be cancelled later 
       var timeoutPromise;
 
+      var scheduleSearchWithTimeout = function(inputValue) {
+        timeoutPromise = $timeout(function () {
+          getMatchesAsync(inputValue);
+        }, waitTime);
+      };
+
+      var cancelPreviousTimeout = function() {
+        if (timeoutPromise) {
+          $timeout.cancel(timeoutPromise);
+        }
+      };
+
       //plug into $parsers pipeline to open a typeahead on view changes initiated from DOM
       //$parsers kick-in on all the changes coming from the view as well as manually triggered by $setViewValue
       modelCtrl.$parsers.unshift(function (inputValue) {
@@ -8079,17 +8140,14 @@ angular.module('ui.bootstrap.typeahead', ['ui.bootstrap.position', 'ui.bootstrap
 
         if (inputValue && inputValue.length >= minSearch) {
           if (waitTime > 0) {
-            if (timeoutPromise) {
-              $timeout.cancel(timeoutPromise);//cancel previous timeout
-            }
-            timeoutPromise = $timeout(function () {
-              getMatchesAsync(inputValue);
-            }, waitTime);
+            cancelPreviousTimeout();
+            scheduleSearchWithTimeout(inputValue);
           } else {
             getMatchesAsync(inputValue);
           }
         } else {
           isLoadingSetter(originalScope, false);
+          cancelPreviousTimeout();
           resetMatches();
         }
 
@@ -8297,7 +8355,7 @@ angular.module("template/accordion/accordion.html", []).run(["$templateCache", f
 
 angular.module("template/alert/alert.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/alert/alert.html",
-    "<div class=\"alert\" ng-class=\"{'alert-{{type || 'warning'}}': true, 'alert-dismissable': closeable}\" role=\"alert\">\n" +
+    "<div class=\"alert\" ng-class=\"['alert-' + (type || 'warning'), closeable ? 'alert-dismissable' : null]\" role=\"alert\">\n" +
     "    <button ng-show=\"closeable\" type=\"button\" class=\"close\" ng-click=\"close()\">\n" +
     "        <span aria-hidden=\"true\">&times;</span>\n" +
     "        <span class=\"sr-only\">Close</span>\n" +
@@ -8426,7 +8484,7 @@ angular.module("template/datepicker/year.html", []).run(["$templateCache", funct
 
 angular.module("template/modal/backdrop.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/modal/backdrop.html",
-    "<div class=\"modal-backdrop fade\"\n" +
+    "<div class=\"modal-backdrop fade {{ backdropClass }}\"\n" +
     "     ng-class=\"{in: animate}\"\n" +
     "     ng-style=\"{'z-index': 1040 + (index && 1 || 0) + index*10}\"\n" +
     "></div>\n" +
@@ -8436,7 +8494,7 @@ angular.module("template/modal/backdrop.html", []).run(["$templateCache", functi
 angular.module("template/modal/window.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/modal/window.html",
     "<div tabindex=\"-1\" role=\"dialog\" class=\"modal fade\" ng-class=\"{in: animate}\" ng-style=\"{'z-index': 1050 + index*10, display: 'block'}\" ng-click=\"close($event)\">\n" +
-    "    <div class=\"modal-dialog\" ng-class=\"{'modal-sm': size == 'sm', 'modal-lg': size == 'lg'}\"><div class=\"modal-content\" ng-transclude></div></div>\n" +
+    "    <div class=\"modal-dialog\" ng-class=\"{'modal-sm': size == 'sm', 'modal-lg': size == 'lg'}\"><div class=\"modal-content\" modal-transclude></div></div>\n" +
     "</div>");
 }]);
 
@@ -8524,16 +8582,8 @@ angular.module("template/tabs/tab.html", []).run(["$templateCache", function($te
     "");
 }]);
 
-angular.module("template/tabs/tabset-titles.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("template/tabs/tabset-titles.html",
-    "<ul class=\"nav {{type && 'nav-' + type}}\" ng-class=\"{'nav-stacked': vertical}\">\n" +
-    "</ul>\n" +
-    "");
-}]);
-
 angular.module("template/tabs/tabset.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/tabs/tabset.html",
-    "\n" +
     "<div>\n" +
     "  <ul class=\"nav nav-{{type || 'tabs'}}\" ng-class=\"{'nav-stacked': vertical, 'nav-justified': justified}\" ng-transclude></ul>\n" +
     "  <div class=\"tab-content\">\n" +
@@ -8585,11 +8635,12 @@ angular.module("template/typeahead/typeahead-match.html", []).run(["$templateCac
 
 angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/typeahead/typeahead-popup.html",
-    "<ul class=\"dropdown-menu\" ng-if=\"isOpen()\" ng-style=\"{top: position.top+'px', left: position.left+'px'}\" style=\"display: block;\" role=\"listbox\" aria-hidden=\"{{!isOpen()}}\">\n" +
+    "<ul class=\"dropdown-menu\" ng-show=\"isOpen()\" ng-style=\"{top: position.top+'px', left: position.left+'px'}\" style=\"display: block;\" role=\"listbox\" aria-hidden=\"{{!isOpen()}}\">\n" +
     "    <li ng-repeat=\"match in matches track by $index\" ng-class=\"{active: isActive($index) }\" ng-mouseenter=\"selectActive($index)\" ng-click=\"selectMatch($index)\" role=\"option\" id=\"{{match.id}}\">\n" +
     "        <div typeahead-match index=\"$index\" match=\"match\" query=\"query\" template-url=\"templateUrl\"></div>\n" +
     "    </li>\n" +
-    "</ul>");
+    "</ul>\n" +
+    "");
 }]);
 
 /**
@@ -26747,95 +26798,6 @@ var RiseVision = RiseVision || {};
 
 RiseVision.Common = RiseVision.Common || {};
 
-RiseVision.Common.Validation = (function() {
-  "use strict";
-
-  /*
-  Defining the regular expressions being used
-   */
-  var urlRegExp = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i,
-      numericRegex = /^(\-|\+)?([0-9]+|Infinity)$/,
-      decimalRegex = /^\-?[0-9]*\.?[0-9]+$/;
-
-  function greaterThan(element, param) {
-    var value = element.value.trim();
-
-    if (!decimalRegex.test(value)) {
-      return false;
-    }
-
-    return (parseFloat(value) > parseFloat(param));
-  }
-
-  function lessThan(element, param) {
-    var value = element.value.trim();
-
-    if (!decimalRegex.test(value)) {
-      return false;
-    }
-
-    return (parseFloat(value) < parseFloat(param));
-  }
-
-  function numeric(element){
-    var value = element.value.trim();
-
-    /*
-     Regexp being used is stricter than parseInt. Using regular expression as
-     mentioned on mozilla
-     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/
-     Global_Objects/parseInt
-     */
-    return numericRegex.test(value);
-  }
-
-  function required(element){
-    var value = element.value.trim(),
-        valid = false;
-
-    if (element.type === "checkbox" || element.type === "radio") {
-      if(element.checked === true) {
-        valid = true;
-      }
-    } else {
-      if (value !== null && value !== '') {
-        valid = true;
-      }
-    }
-
-    return valid;
-  }
-
-  function url(element){
-    var value = element.value.trim();
-
-    // Add http:// if no protocol parameter exists
-    if (value.indexOf("://") === -1) {
-      value = "http://" + value;
-    }
-    /*
-     Discussion
-     http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-
-     with-links#21925491
-
-     Using
-     https://gist.github.com/dperini/729294
-     Reasoning
-     http://mathiasbynens.be/demo/url-regex
-
-     */
-    return urlRegExp.test(value);
-  }
-
-  return {
-    isGreaterThan: greaterThan,
-    isLessThan: lessThan,
-    isValidRequired: required,
-    isValidURL: url,
-    isValidNumber: numeric
-  };
-})();
-
 RiseVision.Common.Utilities = (function() {
 
   function getFontCssStyle(className, fontObj) {
@@ -26934,12 +26896,40 @@ RiseVision.Common.Utilities = (function() {
     }
   }
 
+  function preloadImages(urls) {
+    var length = urls.length,
+      images = [];
+
+    for (var i = 0; i < length; i++) {
+      images[i] = new Image();
+      images[i].src = urls[i];
+    }
+  }
+
+  function getQueryParameter(param) {
+    var query = window.location.search.substring(1),
+      vars = query.split("&"),
+      pair;
+
+    for (var i = 0; i < vars.length; i++) {
+      pair = vars[i].split("=");
+
+      if (pair[0] == param) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+
+    return "";
+  }
+
   return {
+    getQueryParameter: getQueryParameter,
     getFontCssStyle:  getFontCssStyle,
     addCSSRules:      addCSSRules,
     loadFonts:        loadFonts,
     loadCustomFont:   loadCustomFont,
-    loadGoogleFont:   loadGoogleFont
+    loadGoogleFont:   loadGoogleFont,
+    preloadImages:    preloadImages
   };
 })();
 
@@ -26981,7 +26971,6 @@ RiseVision.Common.Utilities = (function() {
     function _init() {
       // Get the HTML markup from the template.
       $element.append(TEMPLATES['font-picker-template.html']);
-
       $selectBox = $element.find(".bfh-selectbox");
       $family = $element.find(".font-family");
       $customFont = $element.find(".custom-font");
@@ -27129,6 +27118,12 @@ RiseVision.Common.Utilities = (function() {
         .append(moreFonts);
     }
 
+    /* Select a particular font in the drop-down. */
+    function _selectFont(family) {
+      $selectBox.find(".bfh-selectbox-option").data("option", family).html(family);
+      $selectBox.find(".font-family").val(family);
+    }
+
     /*
      *  Public Methods
      */
@@ -27213,17 +27208,15 @@ RiseVision.Common.Utilities = (function() {
       // Load it.
       utils.loadGoogleFont(family, contentDocument);
 
-      // Remove previous Google font, if applicable, and add the new one.
-      //$options.find("li.google-font").remove();
-      $options.prepend("<li class='google-font'><a tabindex='-1' href='#' " +
-        "style='font-family: Google' data-option='" + family + "'>" + family +
-        "</a></li>");
+      // Check that the font has not already been added.
+      if ($options.find("li.google-font a[data-option='" + family + "']").length === 0) {
+        $options.prepend("<li class='google-font'><a tabindex='-1' href='#' " +
+          "style='font-family: Google' data-option='" + family + "'>" + family +
+          "</a></li>");
+      }
 
-      // Set Google font as default and sort.
       if (isSelected) {
-        $selectBox.find(".bfh-selectbox-option").data("option", family)
-          .html(family);
-        $selectBox.find(".font-family").val(family);
+        _selectFont(family);
       }
 
       _sortFontList();
@@ -27240,14 +27233,14 @@ RiseVision.Common.Utilities = (function() {
     _init();
 
     return {
-      getFont:       getFont,
-      getFontStyle:  getFontStyle,
-      getFontURL:    getFontURL,
-      setFont:       setFont,
-      reset:         reset,
-      setContentDoc: setContentDocument,
-      addGoogleFont: addGoogleFont,
-      addCustomFont: addCustomFont
+      "getFont":       getFont,
+      "getFontStyle":  getFontStyle,
+      "getFontURL":    getFontURL,
+      "setFont":       setFont,
+      "reset":         reset,
+      "setContentDoc": setContentDocument,
+      "addGoogleFont": addGoogleFont,
+      "addCustomFont": addCustomFont
     };
   }
 
@@ -29614,31 +29607,56 @@ angular.module("risevision.widget.common")
 });
 
 angular.module("risevision.widget.common")
-  .constant("STORAGE_URL_BASE", "storage.googleapis.com/risemedialibrary-")
-  .factory("commonSettings", ["$log", "STORAGE_URL_BASE", function ($log, STORAGE_URL_BASE) {
+  .constant("STORAGE_FILE_URL_BASE", "storage.googleapis.com/risemedialibrary-")
+  .constant("STORAGE_FOLDER_URL_BASE", "googleapis.com/storage/")
+  .factory("commonSettings", ["$log", "STORAGE_FILE_URL_BASE", "STORAGE_FOLDER_URL_BASE",
+    function ($log, STORAGE_FILE_URL_BASE, STORAGE_FOLDER_URL_BASE) {
 
     var factory = {
       getStorageUrlData: function (url) {
         var storage = {},
           str, arr, params, pair;
 
-        if (url.indexOf(STORAGE_URL_BASE) !== -1) {
-          str = url.split(STORAGE_URL_BASE)[1];
+        function getStorageType(storageUrl) {
+          if (storageUrl.indexOf(STORAGE_FILE_URL_BASE) !== -1) {
+            return "file";
+          }
+
+          if (storageUrl.indexOf(STORAGE_FOLDER_URL_BASE) !== -1) {
+            return "folder";
+          }
+
+          return null;
+        }
+
+        function getCompanyId(storageUrl) {
+          var p = storageUrl.split("risemedialibrary-");
+
+          return p[1].slice(0, p[1].indexOf("/"));
+        }
+
+        if (getStorageType(url) === "file") {
+          str = url.split(STORAGE_FILE_URL_BASE)[1];
           str = decodeURIComponent(str.slice(str.indexOf("/") + 1));
           arr = str.split("/");
 
-          storage.folder = (typeof arr[arr.length - 2] !== "undefined" && arr[arr.length - 2] !== null) ?
-            arr[arr.length - 2] : "";
-          storage.fileName = arr[arr.length - 1];
+          storage.companyId = getCompanyId(url);
+          storage.fileName = arr.pop();
+          storage.folder = arr.length > 0 ? arr.join("/") : "";
+
+          if (storage.folder !== "") {
+            // add ending "/" to the folder path
+            storage.folder += "/";
+          }
         }
-        // Check if a folder was selected.
-        else {
+        else if (getStorageType(url) === "folder") {
           params = url.split("?");
 
           for (var i = 0; i < params.length; i++) {
             pair = params[i].split("=");
 
-            if (pair[0] === "prefix") {
+            if (pair[0] === "prefix" && typeof pair[1] !== "undefined" && pair[1] !== "") {
+              storage.companyId = getCompanyId(url);
               storage.folder = decodeURIComponent(pair[1]);
               storage.fileName = "";
               break;
@@ -30332,7 +30350,8 @@ if (typeof WIDGET_SETTINGS_UI_CONFIG === "undefined") {
           $scope.defaultSetting = {
             by: "none",
             speed: "medium",
-            pause: 5
+            pause: 5,
+            pud: 10
           };
 
           $scope.defaults = function(obj) {
@@ -30359,53 +30378,51 @@ if (typeof WIDGET_SETTINGS_UI_CONFIG === "undefined") {
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.scroll-setting"); }
-catch(err) { app = angular.module("risevision.widget.common.scroll-setting", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.scroll-setting"); }
+catch(err) { module = angular.module("risevision.widget.common.scroll-setting", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/scroll-setting/scroll-setting.html",
-    "<div class=\"section\">\n" +
-    "  <h5>{{'scroll.heading' | translate}}</h5>\n" +
-    "  <div class=\"form-group\">\n" +
-    "    <div class=\"row\">\n" +
-    "      <div class=\"col-md-3\">\n" +
-    "        <label>{{'scroll.by.label' | translate}}</label>\n" +
-    "        <select id=\"scroll-by\" ng-model=\"scroll.by\" class=\"form-control\">\n" +
-    "          <option value=\"none\">{{'scroll.by.none' | translate}}</option>\n" +
-    "          <option value=\"continuous\">{{'scroll.by.continuous' | translate}}</option>\n" +
-    "          <option value=\"page\">{{'scroll.by.page' | translate}}</option>\n" +
-    "        </select>\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-md-3\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"control-label\">{{\"scroll.heading\" | translate}}</label>\n" +
+    "      <select id=\"scroll-by\" ng-model=\"scroll.by\" class=\"form-control\">\n" +
+    "        <option value=\"none\">{{'scroll.by.none' | translate}}</option>\n" +
+    "        <option value=\"continuous\">{{'scroll.by.continuous' | translate}}</option>\n" +
+    "        <option value=\"page\">{{'scroll.by.page' | translate}}</option>\n" +
+    "      </select>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-3\" ng-show=\"scroll.by != 'none'\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"control-label\">{{'scroll.speed.label' | translate}}</label>\n" +
+    "      <select id=\"scroll-speed\" ng-model=\"scroll.speed\" class=\"form-control\">\n" +
+    "        <option value=\"slowest\">{{'scroll.speed.slowest' | translate}}</option>\n" +
+    "        <option value=\"slow\">{{'scroll.speed.slow' | translate}}</option>\n" +
+    "        <option value=\"medium\">{{'scroll.speed.medium' | translate}}</option>\n" +
+    "        <option value=\"fast\">{{'scroll.speed.fast' | translate}}</option>\n" +
+    "        <option value=\"fastest\">{{'scroll.speed.fastest' | translate}}</option>\n" +
+    "      </select>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-md-3\" ng-show=\"scroll.by != 'none'\">\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"control-label\">{{'scroll.pause.label' | translate}}</label>\n" +
+    "      <div class=\"input-group\">\n" +
+    "        <input id=\"scroll-pause\" type=\"number\" ng-model=\"scroll.pause\" class=\"form-control\" />\n" +
+    "        <span class=\"input-group-addon\">{{'common.units.seconds' | translate}}</span>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
-    "  <div ng-show=\"scroll.by != 'none'\" class=\"more-scroll-options\">\n" +
+    "  <div class=\"col-md-3\" ng-show=\"scroll.by != 'none'\">\n" +
     "    <div class=\"form-group\">\n" +
-    "      <label for=\"scroll-speed\">{{'scroll.speed.label' | translate}}</label>\n" +
-    "      <div class=\"row\">\n" +
-    "        <div class=\"col-md-3\">\n" +
-    "          <select id=\"scroll-speed\" ng-model=\"scroll.speed\" class=\"form-control\">\n" +
-    "            <option value=\"slowest\">{{'scroll.speed.slowest' | translate}}</option>\n" +
-    "            <option value=\"slow\">{{'scroll.speed.slow' | translate}}</option>\n" +
-    "            <option value=\"medium\">{{'scroll.speed.medium' | translate}}</option>\n" +
-    "            <option value=\"fast\">{{'scroll.speed.fast' | translate}}</option>\n" +
-    "            <option value=\"fastest\">{{'scroll.speed.fastest' | translate}}</option>\n" +
-    "          </select>\n" +
-    "        </div>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "    <div class=\"form-group\">\n" +
-    "      <label for=\"scroll-pause\">\n" +
-    "        {{'scroll.pause.label' | translate}}\n" +
-    "      </label>\n" +
-    "      <span popover=\"{{'scroll.pause.tooltip' | translate}}\"\n" +
-    "            popover-trigger=\"click\" popover-placement=\"right\" rv-tooltip></span>\n" +
-    "      <div class=\"row\">\n" +
-    "        <div class=\"col-md-3\">\n" +
-    "          <div class=\"input-group\">\n" +
-    "            <input id=\"scroll-pause\" type=\"number\" ng-model=\"scroll.pause\" class=\"form-control\" />\n" +
-    "            <span class=\"input-group-addon\">{{'common.units.seconds' | translate}}</span>\n" +
-    "          </div>\n" +
-    "        </div>\n" +
+    "      <label class=\"control-label\">{{'scroll.pud.label' | translate}}</label>\n" +
+    "      <span popover=\"{{'scroll.pud.tooltip' | translate}}\" popover-trigger=\"click\"\n" +
+    "        popover-placement=\"right\" rv-tooltip></span>\n" +
+    "      <div class=\"input-group\">\n" +
+    "        <input id=\"scroll-pud\" type=\"number\" ng-model=\"scroll.pud\" class=\"form-control\" />\n" +
+    "        <span class=\"input-group-addon\">{{'common.units.seconds' | translate}}</span>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
@@ -30447,9 +30464,9 @@ app.run(["$templateCache", function($templateCache) {
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.widget-button-toolbar"); }
-catch(err) { app = angular.module("risevision.widget.common.widget-button-toolbar", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.widget-button-toolbar"); }
+catch(err) { module = angular.module("risevision.widget.common.widget-button-toolbar", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/widget-button-toolbar/widget-button-toolbar.html",
     "<div class=\"btn-toolbar sticky-buttons\">\n" +
@@ -40499,7 +40516,24 @@ RiseVision.Common.Utilities = (function() {
     }
   }
 
+  function getQueryParameter(param) {
+    var query = window.location.search.substring(1),
+      vars = query.split("&"),
+      pair;
+
+    for (var i = 0; i < vars.length; i++) {
+      pair = vars[i].split("=");
+
+      if (pair[0] == param) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+
+    return "";
+  }
+
   return {
+    getQueryParameter: getQueryParameter,
     getFontCssStyle:  getFontCssStyle,
     addCSSRules:      addCSSRules,
     loadFonts:        loadFonts,

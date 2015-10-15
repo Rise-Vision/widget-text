@@ -36,7 +36,7 @@
   });
 
   gulp.task("config", function() {
-    var env = process.env.NODE_ENV || "dev";
+    var env = process.env.NODE_ENV || "prod";
 
     return gulp.src(["./src/config/" + env + ".js"])
       .pipe(rename("config.js"))
