@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Text</title>
+
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+</head>
+<body>
+  <div id="container">
+    <div class="page"></div>
+  </div>
+
+  <script src="../data/text.js"></script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//s3.amazonaws.com/rise-common/scripts/greensock/ThrowPropsPlugin.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/TweenLite.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/CSSPlugin.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/utils/Draggable.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/ScrollToPlugin.min.js"></script>
+  <script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+
+  <script src="../../src/components/auto-scroll/jquery.auto-scroll.js"></script>
+  <script src="../../src/components/widget-common/dist/common.js"></script>
+  <script src="../../src/widget/text.js"></script>
+  <script src="../../src/widget/main.js"></script>
+
+  <script>
+    suite("Initialization", function () {
+      test("should set the width of the container", function() {
+        assert.equal(document.getElementById("container").style.width, window.innerWidth + "px");
+      });
+
+      test("should set the height of the container", function() {
+        assert.equal(document.getElementById("container").style.height, window.innerHeight + "px");
+      });
+
+      test("should show the text", function() {
+        assert.equal(document.querySelector(".page").innerHTML,
+          window.gadget.settings.additionalParams.data);
+      });
+    });
+  </script>
+</body>
+</html>

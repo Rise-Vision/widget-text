@@ -264,12 +264,12 @@ RiseVision.Common.Utilities = (function() {
 
   function getFontCssStyle(className, fontObj) {
     var family = "font-family:" + fontObj.font.family + "; ";
-    var color = "color: " + fontObj.color + "; ";
-    var size = "font-size: " + fontObj.size + "px; ";
+    var color = "color: " + (fontObj.color ? fontObj.color : fontObj.forecolor) + "; ";
+    var size = "font-size: " + (fontObj.size.indexOf("px") === -1 ? fontObj.size + "px; " : fontObj.size + "; ");
     var weight = "font-weight: " + (fontObj.bold ? "bold" : "normal") + "; ";
     var italic = "font-style: " + (fontObj.italic ? "italic" : "normal") + "; ";
     var underline = "text-decoration: " + (fontObj.underline ? "underline" : "none") + "; ";
-    var highlight = "background-color: " + fontObj.highlightColor + "; ";
+    var highlight = "background-color: " + (fontObj.highlightColor ? fontObj.highlightColor : fontObj.backcolor) + "; ";
 
     return "." + className + " {" + family + color + size + weight + italic + underline + highlight + "}";
   }
@@ -350,8 +350,9 @@ RiseVision.Common.Utilities = (function() {
 
     stylesheet.setAttribute("rel", "stylesheet");
     stylesheet.setAttribute("type", "text/css");
-    stylesheet.setAttribute("href", "https://fonts.googleapis.com/css?family=" +
-      family);
+
+    // split to account for family value containing a fallback (eg. Aladin,sans-serif)
+    stylesheet.setAttribute("href", "https://fonts.googleapis.com/css?family=" + family.split(",")[0]);
 
     if (stylesheet !== null) {
       contentDoc.getElementsByTagName("head")[0].appendChild(stylesheet);
@@ -416,103 +417,101 @@ RiseVision.Text = {};
 RiseVision.Text = (function(gadgets) {
   "use strict";
 
-  var prefs = new gadgets.Prefs();
-  var utils = RiseVision.Common.Utilities;
+  var _additionalParams = null,
+    _prefs = new gadgets.Prefs(),
+    _utils = RiseVision.Common.Utilities;
 
   /*
    *  Private Methods
    */
-  function ready() {
-    gadgets.rpc.call("", "rsevent_ready", null, prefs.getString("id"), true,
+  function _init() {
+    var i = 0,
+      rules = [],
+      fontRules = [];
+
+    document.querySelector(".page").innerHTML = _additionalParams.data;
+
+    // Iterate over the data to find any custom or Google fonts that are being used.
+    $.each($("<div/>").html(_additionalParams.data).find("span").addBack(), function() {
+      fontRules = _getFontRules(this);
+
+      for (i = 0; i < fontRules.length; i++) {
+        rules.push(fontRules[i]);
+      }
+    });
+
+    _utils.addCSSRules(rules);
+
+    $("#container").autoScroll(_additionalParams.scroll).on("done", function() {
+      _done();
+    });
+
+    _ready();
+  }
+
+  function _createFontRule(font) {
+    return ".wysiwyg-font-family-" + font.replace(/ /g, "-").toLowerCase() + " { font-family: '" + font + "'; }";
+  }
+
+  // Create CSS rules for fonts.
+  function _getFontRules(elem) {
+    var rules = [],
+      googleFont = $(elem).attr("data-google-font"),
+      customFont = $(elem).attr("data-custom-font");
+
+    // Load Google font.
+    if (googleFont) {
+      _utils.loadGoogleFont(googleFont);
+
+      // Add CSS for the Google font.
+      rules.push(_createFontRule(googleFont));
+    }
+
+    // Load custom font.
+    if (customFont) {
+      _utils.loadCustomFont(customFont, $(elem).attr("data-custom-font-url"));
+
+      // Add CSS for the custom font.
+      rules.push(_createFontRule(customFont));
+    }
+
+    return rules;
+  }
+
+  function _ready() {
+    gadgets.rpc.call("", "rsevent_ready", null, _prefs.getString("id"), true,
       true, true, true, true);
   }
 
-  function done() {
-    gadgets.rpc.call("", "rsevent_done", null, prefs.getString("id"));
+  function _done() {
+    gadgets.rpc.call("", "rsevent_done", null, _prefs.getString("id"));
   }
 
   /*
    *  Public Methods
    */
-  function getAdditionalParams(name, value) {
-    if (name === "additionalParams" && value) {
-      var params = JSON.parse(value);
-      var data = params.data;
-      var rules = [];
+  function setAdditionalParams(additionalParams) {
+    _additionalParams = JSON.parse(JSON.stringify(additionalParams));
 
-      // Set height of container to that of Placeholder so that scrolling works.
-      $("#container").height(prefs.getInt("rsH"))
-        .css("background-color", params.background || "transparent");
-      $(".page").width(prefs.getInt("rsW")).html(data);
+    _additionalParams.width = _prefs.getInt("rsW");
+    _additionalParams.height = _prefs.getInt("rsH");
 
-      $.each($("<div/>").html(data).find("span").addBack(), function() {
-        var standardFont = $(this).attr("data-standard-font");
-        var googleFont = $(this).attr("data-google-font");
-        var customFont = $(this).attr("data-custom-font");
-        var textColor = "", highlightColor = "";
-        var classes = [];
+    document.getElementById("container").style.width = _additionalParams.width + "px";
+    document.getElementById("container").style.height = _additionalParams.height + "px";
 
-        // Add CSS for standard fonts.
-        if (standardFont) {
-          rules.push(createFontRule(standardFont));
-        }
-
-        // Load Google font.
-        if (googleFont) {
-          utils.loadGoogleFont(googleFont);
-
-          // Add CSS for the Google font plus a fallback.
-          rules.push(createFontRule(googleFont));
-        }
-
-        // Load custom font.
-        if (customFont) {
-          utils.loadCustomFont(customFont, $(this).attr("data-custom-font-url"));
-
-          // Add CSS for the custom font plus a fallback.
-          rules.push(createFontRule(customFont));
-        }
-
-        // Set text and highlight colours.
-        classes = this.className.split(" ");
-        textColor = $(this).attr("data-text-color");
-        highlightColor = $(this).attr("data-highlight-color");
-
-        /* Check if any of the classes start with 'wysiwyg-text-color' or
-           'wysiwyg-highlight-color'. */
-        for (var i = 0, length = classes.length; i < length; i++) {
-          if (classes[i].indexOf("wysiwyg-text-color") === 0) {
-            rules.push("." + classes[i] + " { color: " + textColor + "; }");
-          }
-          else if (classes[i].indexOf("wysiwyg-highlight-color") === 0) {
-            rules.push("." + classes[i] + " { background-color: " +
-              highlightColor + "; }");
-          }
-        }
-      });
-
-      utils.addCSSRules(rules);
-
-      $("#container").autoScroll(params.scroll)
-      .on("done", function() {
-        done();
-      });
-    }
-
-    ready();
-  }
-
-  function createFontRule(font) {
-    return ".wysiwyg-font-family-" + font.replace(/ /g, "-").toLowerCase() +
-      " { font-family: '" + font + "', serif; }";
+    _init();
   }
 
   function play() {
-    $("#container").data("plugin_autoScroll").play();
+    if ($("#container").data("plugin_autoScroll")) {
+      $("#container").data("plugin_autoScroll").play();
+    }
   }
 
   function pause() {
-    $("#container").data("plugin_autoScroll").pause();
+    if ($("#container").data("plugin_autoScroll")) {
+      $("#container").data("plugin_autoScroll").pause();
+    }
   }
 
   function stop() {
@@ -520,10 +519,10 @@ RiseVision.Text = (function(gadgets) {
   }
 
   return {
-    getAdditionalParams: getAdditionalParams,
-    play               : play,
-    pause              : pause,
-    stop               : stop
+    "pause": pause,
+    "play": play,
+    "setAdditionalParams": setAdditionalParams,
+    "stop": stop
   };
 })(gadgets);
 
@@ -532,8 +531,52 @@ RiseVision.Text = (function(gadgets) {
 (function (window, gadgets) {
   "use strict";
 
-  var prefs = new gadgets.Prefs();
-  var id = prefs.getString("id");
+  var prefs = new gadgets.Prefs(),
+    id = prefs.getString("id");
+
+  window.oncontextmenu = function () {
+    return false;
+  };
+
+  document.body.onmousedown = function() {
+    return false;
+  };
+
+  function configure(names, values) {
+    var additionalParams,
+      companyId = "",
+      displayId = "";
+
+    if (Array.isArray(names) && names.length > 0 && Array.isArray(values) && values.length > 0) {
+      if (names[0] === "companyId") {
+        companyId = values[0];
+      }
+
+      if (names[1] === "displayId") {
+        if (values[1]) {
+          displayId = values[1];
+        }
+        else {
+          displayId = "preview";
+        }
+      }
+
+      if (names[2] === "additionalParams") {
+        additionalParams = JSON.parse(values[2]);
+
+        RiseVision.Text.setAdditionalParams(additionalParams);
+      }
+    }
+  }
+
+  if (id && id !== "") {
+    gadgets.rpc.register("rscmd_play_" + id, play);
+    gadgets.rpc.register("rscmd_pause_" + id, pause);
+    gadgets.rpc.register("rscmd_stop_" + id, stop);
+
+    gadgets.rpc.register("rsparam_set_" + id, configure);
+    gadgets.rpc.call("", "rsparam_get", null, id, ["companyId", "displayId", "additionalParams"]);
+  }
 
   function play() {
     RiseVision.Text.play();
@@ -546,18 +589,4 @@ RiseVision.Text = (function(gadgets) {
   function stop() {
     RiseVision.Text.stop();
   }
-
-  // Get additional parameters.
-  if (id) {
-    gadgets.rpc.register("rscmd_play_" + id, play);
-    gadgets.rpc.register("rscmd_pause_" + id, pause);
-    gadgets.rpc.register("rscmd_stop_" + id, stop);
-
-    gadgets.rpc.register("rsparam_set_" + id, RiseVision.Text.getAdditionalParams);
-    gadgets.rpc.call("", "rsparam_get", null, id, "additionalParams");
-  }
-
-  window.oncontextmenu = function () {
-    return false;
-  };
 })(window, gadgets);

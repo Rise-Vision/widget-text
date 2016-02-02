@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Text Widget</title>
 
-    <!-- build:css css/widget.min.css -->
-    <link rel="stylesheet" href="components/common-style/dist/css/alignment.min.css">
-    <link rel="stylesheet" href="components/bootstrap-form-components/dist/css/all.min.css">
-    <link rel="stylesheet" href="components/bootstrap3-wysihtml5/dist/css/bootstrap3-wysihtml5-line-height.min.css">
-    <!-- endbuild -->
-
     <style>
       body {
         margin: 0;
@@ -22,13 +16,47 @@
       <div class="page"></div>
     </div>
 
+    <!-- build:e2egadgets -->
     <script src="//rvashow2.appspot.com/gadgets/gadgets.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- endbuild -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+      if (typeof jQuery == "undefined") {
+        document.write(unescape("%3Cscript src='js/vendor/jquery/dist/jquery.min.js' type='text/javascript'%3E%3C/script%3E"));
+      }
+    </script>
+
+    <!-- Club GreenSock Members Only Plugin, subject to its own license: http://greensock.com/club/ -->
     <script src="//s3.amazonaws.com/rise-common/scripts/greensock/ThrowPropsPlugin.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/TweenLite.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/CSSPlugin.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/utils/Draggable.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/ScrollToPlugin.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/TweenLite.min.js"></script>
+    <script>
+      if (typeof TweenLite == "undefined") {
+        document.write(unescape("%3Cscript src='js/vendor/gsap/src/minified/TweenLite.min.js' type='text/javascript'%3E%3C/script%3E"));
+      }
+    </script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/CSSPlugin.min.js"></script>
+    <script>
+      if (typeof CSSPlugin == "undefined") {
+        document.write(unescape("%3Cscript src='js/vendor/gsap/src/minified/plugins/CSSPlugin.min.js' type='text/javascript'%3E%3C/script%3E"));
+      }
+    </script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/utils/Draggable.min.js"></script>
+    <script>
+      if (typeof Draggable == "undefined") {
+        document.write(unescape("%3Cscript src='js/vendor/gsap/src/minified/utils/Draggable.min.js' type='text/javascript'%3E%3C/script%3E"));
+      }
+    </script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/ScrollToPlugin.min.js"></script>
+    <script>
+      if (typeof ScrollToPlugin == "undefined") {
+        document.write(unescape("%3Cscript src='js/vendor/gsap/src/minified/plugins/ScrollToPlugin.min.js' type='text/javascript'%3E%3C/script%3E"));
+      }
+    </script>
 
     <!-- build:js js/widget.min.js -->
     <script src="components/auto-scroll/jquery.auto-scroll.js"></script>
