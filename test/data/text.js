@@ -7,9 +7,9 @@
     "additionalParams": {
       "data": "<p>My Text</p>",
       "scroll": {
-        "by": "none",
-        "speed": "medium",
-        "pause": 5,
+        "by": "continuous",
+        "speed": "fastest",
+        "pause": 0,
         "pud": 10
       }
     }

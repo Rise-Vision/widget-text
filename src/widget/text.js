@@ -67,6 +67,14 @@ RiseVision.Text = (function(gadgets) {
     return rules;
   }
 
+  function _getTableName() {
+    return "text_events";
+  }
+
+  function _logEvent(params) {
+    RiseVision.Common.LoggerUtils.logEvent(_getTableName(), params);
+  }
+
   function _ready() {
     gadgets.rpc.call("", "rsevent_ready", null, _prefs.getString("id"), true,
       true, true, true, true);
@@ -74,6 +82,7 @@ RiseVision.Text = (function(gadgets) {
 
   function _done() {
     gadgets.rpc.call("", "rsevent_done", null, _prefs.getString("id"));
+    _logEvent({ "event": "done" });
   }
 
   /*
@@ -95,6 +104,8 @@ RiseVision.Text = (function(gadgets) {
     if ($("#container").data("plugin_autoScroll")) {
       $("#container").data("plugin_autoScroll").play();
     }
+
+    _logEvent({ "event": "play"});
   }
 
   function pause() {
