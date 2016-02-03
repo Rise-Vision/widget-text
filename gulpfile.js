@@ -5,8 +5,11 @@
 
   var bump = require("gulp-bump");
   var del = require("del");
+  var env = process.env.NODE_ENV || "prod";
   var factory = require("widget-tester").gulpTaskFactory;
   var gulp = require("gulp");
+  var gulpif = require("gulp-if");
+  var gutil = require("gulp-util");
   var jshint = require("gulp-jshint");
   var minifyCSS = require("gulp-minify-css");
   var path = require("path");
@@ -15,6 +18,7 @@
   var sourcemaps = require("gulp-sourcemaps");
   var uglify = require("gulp-uglify");
   var usemin = require("gulp-usemin");
+  var wct = require("web-component-tester").gulp.init(gulp);
 
   var htmlFiles = [
       "./src/settings.html",
@@ -23,6 +27,13 @@
     jsFiles = [
       "src/**/*.js",
       "!./src/components/**/*"
+    ],
+    vendorFiles = [
+      "./src/components/jquery/dist/**/*",
+      "./src/components/gsap/src/minified/TweenLite.min.js",
+      "./src/components/gsap/src/minified/plugins/CSSPlugin.min.js",
+      "./src/components/gsap/src/minified/utils/Draggable.min.js",
+      "./src/components/gsap/src/minified/plugins/ScrollToPlugin.min.js"
     ];
 
   gulp.task("bump", function() {
@@ -36,9 +47,11 @@
   });
 
   gulp.task("config", function() {
-    var env = process.env.NODE_ENV || "prod";
+    var configFile = (env === "dev" ? "dev.js" : "prod.js");
 
-    return gulp.src(["./src/config/" + env + ".js"])
+    gutil.log("Environment is", env);
+
+    return gulp.src(["./src/config/" + configFile])
       .pipe(rename("config.js"))
       .pipe(gulp.dest("./src/config"));
   });
@@ -51,11 +64,18 @@
   });
 
   gulp.task("source", ["lint"], function () {
+    var isProd = (env === "prod");
+
     return gulp.src(["./src/*.html"])
-      .pipe(usemin({
-        css: [sourcemaps.init(), minifyCSS(), sourcemaps.write()],
-        js: [sourcemaps.init(), uglify(), sourcemaps.write()]
-      }))
+      .pipe(gulpif(isProd,
+        // Minify for production.
+        usemin({
+          css: [sourcemaps.init(), minifyCSS(), sourcemaps.write()],
+          js: [sourcemaps.init(), uglify(), sourcemaps.write()]
+        }),
+        // Don't minify for staging.
+        usemin({})
+      ))
       .pipe(gulp.dest("dist/"));
   });
 
@@ -92,22 +112,47 @@
       .pipe(gulp.dest("dist/locales"));
   });
 
+  gulp.task("vendor", function(cb) {
+    return gulp.src(vendorFiles, {base: "./src/components"})
+      .pipe(gulp.dest("dist/js/vendor"));
+  });
+
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["source", "fonts", "images", "i18n"], ["unminify"], cb);
+    runSequence(["clean", "config"], ["source", "fonts", "images", "i18n", "vendor"], ["unminify"], cb);
   });
 
   gulp.task("build-dev", function (cb) {
-    runSequence(["clean", "config"], ["source-dev", "fonts", "images", "i18n"], cb);
+    runSequence(["clean", "config"], ["source-dev", "fonts", "images", "i18n", "vendor"], cb);
   });
 
   gulp.task("webdriver_update", factory.webdriveUpdate());
-  gulp.task("html:e2e", factory.htmlE2E());
-  gulp.task("e2e:server", ["config", "html:e2e"], factory.testServer());
+
+  // ***** e2e Testing ***** //
+ gulp.task("html:e2e:settings", factory.htmlE2E());
+
+  gulp.task("e2e:server:settings", ["config", "html:e2e:settings"], factory.testServer());
+
+  gulp.task("test:e2e:settings:run", ["webdriver_update"], factory.testE2EAngular({
+    testFiles: "test/e2e/settings.js"}
+  ));
+
+  gulp.task("test:e2e:settings", function(cb) {
+    runSequence(["e2e:server:settings"], "test:e2e:settings:run", "e2e:server-close", cb);
+  });
+
   gulp.task("e2e:server-close", factory.testServerClose());
-  gulp.task("test:e2e:settings", ["webdriver_update", "html:e2e", "e2e:server"], factory.testE2EAngular());
+
+  gulp.task("test:e2e", function(cb) {
+    runSequence("test:e2e:settings", cb);
+  });
+
+  // ***** Integration Testing ***** //
+  gulp.task("test:integration", function(cb) {
+    runSequence("test:local", cb);
+  });
 
   gulp.task("test", function(cb) {
-    runSequence("test:e2e:settings", "e2e:server-close", cb);
+    runSequence("test:e2e", "test:integration", cb);
   });
 
   gulp.task("watch", function() {

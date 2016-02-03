@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Text - Google Font</title>
+
+  <script src="../../src/components/web-component-tester/browser.js"></script>
+</head>
+<body>
+  <div id="container">
+    <div class="page"></div>
+  </div>
+
+  <script src="../data/text-google-font.js"></script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//s3.amazonaws.com/rise-common/scripts/greensock/ThrowPropsPlugin.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/TweenLite.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/CSSPlugin.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/utils/Draggable.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/ScrollToPlugin.min.js"></script>
+  <script src="../../node_modules/widget-tester/mocks/gadget-mocks.js"></script>
+
+  <script src="../../src/components/auto-scroll/jquery.auto-scroll.js"></script>
+  <script src="../../src/components/widget-common/dist/common.js"></script>
+  <script src="../../src/widget/text.js"></script>
+  <script src="../../src/widget/main.js"></script>
+
+  <script>
+    suite("Google Font", function () {
+      test("should load a Google font", function() {
+        assert.equal(document.styleSheets[1].href, "https://fonts.googleapis.com/css?family=\\%22Aclonica\\%22");
+      });
+
+      test("should create a CSS rule for a Google font", function() {
+        assert.equal(document.styleSheets[2].cssRules[0].cssText, '.wysiwyg-font-family-\\"aclonica\\" { font-family: \'"Aclonica"\'; }');
+      });
+    });
+  </script>
+</body>
+</html>

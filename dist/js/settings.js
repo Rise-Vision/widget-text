@@ -30027,13 +30027,27 @@ TEMPLATES['alignment.html'] = "<div class=\"btn-group alignment\">\n" +
   };
 })(jQuery, window, document, TEMPLATES);
 
-/* global WIDGET_SETTINGS_UI_CONFIG: true */
 /* exported WIDGET_SETTINGS_UI_CONFIG */
-if (typeof WIDGET_SETTINGS_UI_CONFIG === "undefined") {
-  var WIDGET_SETTINGS_UI_CONFIG = {
-    //put variables here
-  };
-}
+var WIDGET_SETTINGS_UI_CONFIG = {
+  "families": "Andale Mono=andale mono,monospace;" +
+      "Arial=arial,helvetica,sans-serif;" +
+      "Arial Black=arial black,sans-serif;" +
+      "Book Antiqua=book antiqua,palatino,serif;" +
+      "Comic Sans MS=comic sans ms,sans-serif;" +
+      "Courier New=courier new,courier,monospace;" +
+      "Georgia=georgia,palatino,serif;" +
+      "Helvetica=helvetica,arial,sans-serif;" +
+      "Impact=impact,sans-serif;" +
+      "Symbol=symbol;" +
+      "Tahoma=tahoma,arial,helvetica,sans-serif;" +
+      "Terminal=terminal,monaco,monospace;" +
+      "Times New Roman=times new roman,times,serif;" +
+      "Trebuchet MS=trebuchet ms,geneva,sans-serif;" +
+      "Verdana=verdana,geneva,sans-serif;" +
+      "Webdings=webdings;" +
+      "Wingdings=wingdings,zapf dingbats;",
+  "sizes": "8px 9px 10px 11px 12px 14px 18px 24px 30px 36px 48px 60px 72px 96px"
+};
 
 if(typeof TEMPLATES === 'undefined') {var TEMPLATES = {};}
 TEMPLATES['font-style.html'] = "<div class=\"btn-group\">\n" +
@@ -30180,13 +30194,27 @@ TEMPLATES['font-style.html'] = "<div class=\"btn-group\">\n" +
   };
 })(jQuery, window, document, TEMPLATES);
 
-/* global WIDGET_SETTINGS_UI_CONFIG: true */
 /* exported WIDGET_SETTINGS_UI_CONFIG */
-if (typeof WIDGET_SETTINGS_UI_CONFIG === "undefined") {
-  var WIDGET_SETTINGS_UI_CONFIG = {
-    //put variables here
-  };
-}
+var WIDGET_SETTINGS_UI_CONFIG = {
+  "families": "Andale Mono=andale mono,monospace;" +
+      "Arial=arial,helvetica,sans-serif;" +
+      "Arial Black=arial black,sans-serif;" +
+      "Book Antiqua=book antiqua,palatino,serif;" +
+      "Comic Sans MS=comic sans ms,sans-serif;" +
+      "Courier New=courier new,courier,monospace;" +
+      "Georgia=georgia,palatino,serif;" +
+      "Helvetica=helvetica,arial,sans-serif;" +
+      "Impact=impact,sans-serif;" +
+      "Symbol=symbol;" +
+      "Tahoma=tahoma,arial,helvetica,sans-serif;" +
+      "Terminal=terminal,monaco,monospace;" +
+      "Times New Roman=times new roman,times,serif;" +
+      "Trebuchet MS=trebuchet ms,geneva,sans-serif;" +
+      "Verdana=verdana,geneva,sans-serif;" +
+      "Webdings=webdings;" +
+      "Wingdings=wingdings,zapf dingbats;",
+  "sizes": "8px 9px 10px 11px 12px 14px 18px 24px 30px 36px 48px 60px 72px 96px"
+};
 
 if(typeof TEMPLATES === 'undefined') {var TEMPLATES = {};}
 TEMPLATES['url-field-template.html'] = "<div class=\"form-group validate-url\">\n" +
@@ -30309,13 +30337,27 @@ TEMPLATES['url-field-template.html'] = "<div class=\"form-group validate-url\">\
   };
 })(jQuery, window, document, TEMPLATES);
 
-/* global WIDGET_SETTINGS_UI_CONFIG: true */
 /* exported WIDGET_SETTINGS_UI_CONFIG */
-if (typeof WIDGET_SETTINGS_UI_CONFIG === "undefined") {
-  var WIDGET_SETTINGS_UI_CONFIG = {
-    //put variables here
-  };
-}
+var WIDGET_SETTINGS_UI_CONFIG = {
+  "families": "Andale Mono=andale mono,monospace;" +
+      "Arial=arial,helvetica,sans-serif;" +
+      "Arial Black=arial black,sans-serif;" +
+      "Book Antiqua=book antiqua,palatino,serif;" +
+      "Comic Sans MS=comic sans ms,sans-serif;" +
+      "Courier New=courier new,courier,monospace;" +
+      "Georgia=georgia,palatino,serif;" +
+      "Helvetica=helvetica,arial,sans-serif;" +
+      "Impact=impact,sans-serif;" +
+      "Symbol=symbol;" +
+      "Tahoma=tahoma,arial,helvetica,sans-serif;" +
+      "Terminal=terminal,monaco,monospace;" +
+      "Times New Roman=times new roman,times,serif;" +
+      "Trebuchet MS=trebuchet ms,geneva,sans-serif;" +
+      "Verdana=verdana,geneva,sans-serif;" +
+      "Webdings=webdings;" +
+      "Wingdings=wingdings,zapf dingbats;",
+  "sizes": "8px 9px 10px 11px 12px 14px 18px 24px 30px 36px 48px 60px 72px 96px"
+};
 
 (function () {
   "use strict";
@@ -30439,26 +30481,11 @@ module.run(["$templateCache", function($templateCache) {
       return {
         restrict: "E",
         scope: {
-          help: "@",
-          contribute: "@",
           save: "&",
           cancel: "&",
           disableSave: "&"
         },
-        template: $templateCache.get("_angular/widget-button-toolbar/widget-button-toolbar.html"),
-        link: function ($scope, elem, attrs) {
-          $scope.helpRef = "";
-          $scope.contributeRef = "";
-
-          if (typeof attrs.help !== "undefined" && attrs.help !== "") {
-            $scope.helpRef = attrs.help;
-          }
-
-          if (typeof attrs.contribute !== "undefined" && attrs.contribute !== "") {
-            $scope.contributeRef = attrs.contribute;
-          }
-
-        }
+        template: $templateCache.get("_angular/widget-button-toolbar/widget-button-toolbar.html")
       };
     }]);
 }());
@@ -30469,23 +30496,15 @@ catch(err) { module = angular.module("risevision.widget.common.widget-button-too
 module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("_angular/widget-button-toolbar/widget-button-toolbar.html",
-    "<div class=\"btn-toolbar sticky-buttons\">\n" +
+    "<div class=\"pull-right\">\n" +
     "  <button id=\"save\" class=\"btn btn-primary btn-fixed-width\" type=\"button\" ng-click=\"save()\" ng-disabled=\"disableSave()\">\n" +
     "    <span>{{\"common.save\" | translate}}</span>\n" +
-    "    <i class=\"fa fa-white fa-check fa-lg icon-right\"></i>\n" +
+    "    <i class=\"fa fa-white fa-check icon-right\"></i>\n" +
     "  </button>\n" +
     "  <button id=\"cancel\" class=\"btn btn-default btn-fixed-width\" type=\"button\" ng-click=\"cancel()\">\n" +
     "    <span>{{\"common.cancel\" | translate}}</span>\n" +
-    "    <i class=\"fa fa-white fa-times fa-lg icon-right\"></i>\n" +
+    "    <i class=\"fa fa-white fa-times icon-right\"></i>\n" +
     "  </button>\n" +
-    "  <a type=\"button\" class=\"btn btn-rv-help btn-fixed-width\" target=\"_blank\" href={{helpRef}} ng-if=\"helpRef !== ''\">\n" +
-    "    <span>{{\"common.help\" | translate}}</span>\n" +
-    "    <i class=\"fa fa-question-circle fa-lg icon-right\"></i>\n" +
-    "  </a>\n" +
-    "  <a type=\"button\" class=\"btn btn-rv-help btn-fixed-width\" target=\"_blank\" href={{contributeRef}} ng-if=\"contributeRef !== ''\">\n" +
-    "    <span>{{\"common.contribute\" | translate}}</span>\n" +
-    "    <i class=\"fa fa-github fa-lg icon-right\"></i>\n" +
-    "  </a>\n" +
     "</div>\n" +
     "");
 }]);
@@ -40412,12 +40431,12 @@ RiseVision.Common.Utilities = (function() {
 
   function getFontCssStyle(className, fontObj) {
     var family = "font-family:" + fontObj.font.family + "; ";
-    var color = "color: " + fontObj.color + "; ";
-    var size = "font-size: " + fontObj.size + "px; ";
+    var color = "color: " + (fontObj.color ? fontObj.color : fontObj.forecolor) + "; ";
+    var size = "font-size: " + (fontObj.size.indexOf("px") === -1 ? fontObj.size + "px; " : fontObj.size + "; ");
     var weight = "font-weight: " + (fontObj.bold ? "bold" : "normal") + "; ";
     var italic = "font-style: " + (fontObj.italic ? "italic" : "normal") + "; ";
     var underline = "text-decoration: " + (fontObj.underline ? "underline" : "none") + "; ";
-    var highlight = "background-color: " + fontObj.highlightColor + "; ";
+    var highlight = "background-color: " + (fontObj.highlightColor ? fontObj.highlightColor : fontObj.backcolor) + "; ";
 
     return "." + className + " {" + family + color + size + weight + italic + underline + highlight + "}";
   }
@@ -40498,8 +40517,9 @@ RiseVision.Common.Utilities = (function() {
 
     stylesheet.setAttribute("rel", "stylesheet");
     stylesheet.setAttribute("type", "text/css");
-    stylesheet.setAttribute("href", "https://fonts.googleapis.com/css?family=" +
-      family);
+
+    // split to account for family value containing a fallback (eg. Aladin,sans-serif)
+    stylesheet.setAttribute("href", "https://fonts.googleapis.com/css?family=" + family.split(",")[0]);
 
     if (stylesheet !== null) {
       contentDoc.getElementsByTagName("head")[0].appendChild(stylesheet);
