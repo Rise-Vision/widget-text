@@ -33,6 +33,8 @@
         }
       }
 
+      RiseVision.Common.LoggerUtils.setIds(companyId, displayId);
+
       if (names[2] === "additionalParams") {
         additionalParams = JSON.parse(values[2]);
 

@@ -256,6 +256,14 @@
 	};
 })(jQuery, window, document);
 
+var WIDGET_COMMON_CONFIG = {
+  AUTH_PATH_URL: "v1/widget/auth",
+  LOGGER_CLIENT_ID: "1088527147109-6q1o2vtihn34292pjt4ckhmhck0rk0o7.apps.googleusercontent.com",
+  LOGGER_CLIENT_SECRET: "nlZyrcPLg6oEwO9f9Wfn29Wh",
+  LOGGER_REFRESH_TOKEN: "1/xzt4kwzE1H7W9VnKB8cAaCx6zb4Es4nKEoqaYHdTD15IgOrJDtdun6zK6XiATCKT",
+  STORAGE_ENV: "prod",
+  STORE_URL: "https://store-dot-rvaserver2.appspot.com/"
+};
 var RiseVision = RiseVision || {};
 
 RiseVision.Common = RiseVision.Common || {};
@@ -396,6 +404,212 @@ RiseVision.Common.Utilities = (function() {
   };
 })();
 
+/* global gadgets */
+
+var RiseVision = RiseVision || {};
+RiseVision.Common = RiseVision.Common || {};
+
+RiseVision.Common.LoggerUtils = (function() {
+  "use strict";
+
+   var displayId = "",
+    companyId = "";
+
+  /*
+   *  Private Methods
+   */
+
+  /* Retrieve parameters to pass to the event logger. */
+  function getEventParams(params, cb) {
+    var json = null;
+
+    // event is required.
+    if (params.event) {
+      json = params;
+
+      if (json.file_url) {
+        json.file_format = getFileFormat(json.file_url);
+      }
+
+      json.company_id = companyId;
+      json.display_id = displayId;
+
+      cb(json);
+    }
+    else {
+      cb(json);
+    }
+  }
+
+  // Get suffix for BQ table name.
+  function getSuffix() {
+    var date = new Date(),
+      year = date.getUTCFullYear(),
+      month = date.getUTCMonth() + 1,
+      day = date.getUTCDate();
+
+    if (month < 10) {
+      month = "0" + month;
+    }
+
+    if (day < 10) {
+      day = "0" + day;
+    }
+
+    return year + month + day;
+  }
+
+  /*
+   *  Public Methods
+   */
+  function getFileFormat(url) {
+    var hasParams = /[?#&]/,
+      str;
+
+    if (!url || typeof url !== "string") {
+      return null;
+    }
+
+    str = url.substr(url.lastIndexOf(".") + 1);
+
+    // don't include any params after the filename
+    if (hasParams.test(str)) {
+      str = str.substr(0 ,(str.indexOf("?") !== -1) ? str.indexOf("?") : str.length);
+
+      str = str.substr(0, (str.indexOf("#") !== -1) ? str.indexOf("#") : str.length);
+
+      str = str.substr(0, (str.indexOf("&") !== -1) ? str.indexOf("&") : str.length);
+    }
+
+    return str.toLowerCase();
+  }
+
+  function getInsertData(params) {
+    var BASE_INSERT_SCHEMA = {
+      "kind": "bigquery#tableDataInsertAllRequest",
+      "skipInvalidRows": false,
+      "ignoreUnknownValues": false,
+      "templateSuffix": getSuffix(),
+      "rows": [{
+        "insertId": ""
+      }]
+    },
+    data = JSON.parse(JSON.stringify(BASE_INSERT_SCHEMA));
+
+    data.rows[0].insertId = Math.random().toString(36).substr(2).toUpperCase();
+    data.rows[0].json = JSON.parse(JSON.stringify(params));
+    data.rows[0].json.ts = new Date().toISOString();
+
+    return data;
+  }
+
+  function logEvent(table, params) {
+    getEventParams(params, function(json) {
+      if (json !== null) {
+        RiseVision.Common.Logger.log(table, json);
+      }
+    });
+  }
+
+  /* Set the Company and Display IDs. */
+  function setIds(company, display) {
+    companyId = company;
+    displayId = display;
+  }
+
+  return {
+    "getInsertData": getInsertData,
+    "getFileFormat": getFileFormat,
+    "logEvent": logEvent,
+    "setIds": setIds
+  };
+})();
+
+RiseVision.Common.Logger = (function(utils) {
+  "use strict";
+
+  var REFRESH_URL = "https://www.googleapis.com/oauth2/v3/token?client_id=" + WIDGET_COMMON_CONFIG.LOGGER_CLIENT_ID +
+      "&client_secret=" + WIDGET_COMMON_CONFIG.LOGGER_CLIENT_SECRET +
+      "&refresh_token=" + WIDGET_COMMON_CONFIG.LOGGER_REFRESH_TOKEN +
+      "&grant_type=refresh_token";
+
+  var serviceUrl = "https://www.googleapis.com/bigquery/v2/projects/client-side-events/datasets/Widget_Events/tables/TABLE_ID/insertAll",
+    throttle = false,
+    throttleDelay = 1000,
+    lastEvent = "",
+    refreshDate = 0,
+    token = "";
+
+  /*
+   *  Private Methods
+   */
+  function refreshToken(cb) {
+    var xhr = new XMLHttpRequest();
+
+    if (new Date() - refreshDate < 3580000) {
+      return cb({});
+    }
+
+    xhr.open("POST", REFRESH_URL, true);
+    xhr.onloadend = function() {
+      var resp = JSON.parse(xhr.response);
+
+      cb({ token: resp.access_token, refreshedAt: new Date() });
+    };
+
+    xhr.send();
+  }
+
+  function isThrottled(event) {
+    return throttle && (lastEvent === event);
+  }
+
+  /*
+   *  Public Methods
+   */
+  function log(tableName, params) {
+    if (!tableName || !params || (params.hasOwnProperty("event") && !params.event) ||
+      (params.hasOwnProperty("event") && isThrottled(params.event))) {
+      return;
+    }
+
+    throttle = true;
+    lastEvent = params.event;
+
+    setTimeout(function () {
+      throttle = false;
+    }, throttleDelay);
+
+    function insertWithToken(refreshData) {
+      var xhr = new XMLHttpRequest(),
+        insertData, url;
+
+      url = serviceUrl.replace("TABLE_ID", tableName);
+      refreshDate = refreshData.refreshedAt || refreshDate;
+      token = refreshData.token || token;
+      insertData = utils.getInsertData(params);
+
+      // Insert the data.
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Authorization", "Bearer " + token);
+
+      if (params.cb && typeof params.cb === "function") {
+        xhr.onloadend = function() {
+          params.cb(xhr.response);
+        };
+      }
+
+      xhr.send(JSON.stringify(insertData));
+    }
+
+    return refreshToken(insertWithToken);
+  }
+
+  return {
+    "log": log
+  };
+})(RiseVision.Common.LoggerUtils);
 /* jshint ignore:start */
 var _gaq = _gaq || [];
 
@@ -478,6 +692,14 @@ RiseVision.Text = (function(gadgets) {
     return rules;
   }
 
+  function _getTableName() {
+    return "text_events";
+  }
+
+  function _logEvent(params) {
+    RiseVision.Common.LoggerUtils.logEvent(_getTableName(), params);
+  }
+
   function _ready() {
     gadgets.rpc.call("", "rsevent_ready", null, _prefs.getString("id"), true,
       true, true, true, true);
@@ -485,6 +707,7 @@ RiseVision.Text = (function(gadgets) {
 
   function _done() {
     gadgets.rpc.call("", "rsevent_done", null, _prefs.getString("id"));
+    _logEvent({ "event": "done" });
   }
 
   /*
@@ -506,6 +729,8 @@ RiseVision.Text = (function(gadgets) {
     if ($("#container").data("plugin_autoScroll")) {
       $("#container").data("plugin_autoScroll").play();
     }
+
+    _logEvent({ "event": "play"});
   }
 
   function pause() {
@@ -560,6 +785,8 @@ RiseVision.Text = (function(gadgets) {
           displayId = "preview";
         }
       }
+
+      RiseVision.Common.LoggerUtils.setIds(companyId, displayId);
 
       if (names[2] === "additionalParams") {
         additionalParams = JSON.parse(values[2]);
