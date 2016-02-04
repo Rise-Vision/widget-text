@@ -2,15 +2,11 @@
   "name": "widget-text",
   "version": "1.0.0",
   "homepage": "https://github.com/Rise-Vision/widget-text",
-  "authors": [
-    "Donna Peplinskie"
-  ],
   "description": "Rise Vision Text Widget",
   "keywords": [
     "rise-vision",
     "text",
     "widget",
-    "wysiwyg",
     "editor"
   ],
   "license": "GPLv3",
@@ -19,8 +15,7 @@
     "**/.*",
     "node_modules",
     "src/components",
-    "test",
-    "reports"
+    "test"
   ],
   "devDependencies": {
     "angular-mocks": "~1.3.0",
@@ -30,10 +25,10 @@
     "angular": "~1.3.0",
     "angular-bootstrap": "~0.11.1",
     "auto-scroll": "https://github.com/Rise-Vision/auto-scroll.git#1.1.0",
-    "bootstrap3-wysihtml5": "https://github.com/Rise-Vision/bootstrap3-wysihtml5.git#0.0.3",
     "gsap": "~1.18.2",
     "jquery": "~2.2.0",
-    "rv-common-style": "https://github.com/Rise-Vision/common-style.git#1.1.12",
+    "rv-common-i18n": "https://github.com/Rise-Vision/common-i18n.git#1.3.32",
+    "rv-common-style": "https://github.com/Rise-Vision/common-style.git#1.3.47",
     "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#1.2.10",
     "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git#0.1.11"
   },
