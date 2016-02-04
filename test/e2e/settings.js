@@ -26,23 +26,15 @@
         .to.eventually.equal("none");
     });
 
-    it("Should load editor", function () {
-      expect(element(by.css(".wysihtml5-toolbar")).isPresent())
-        .to.eventually.be.true;
-
-      expect(element(by.css(".wysihtml5-sandbox")).isPresent())
-        .to.eventually.be.true;
-
-      expect(element(by.id("editable")).isDisplayed())
-        .to.eventually.be.false;
-    });
-
     it("Should correctly save settings", function() {
       var settings = {
         "params": {},
         "additionalParams": {
           "data": "",
-          "background": "",
+          "customFonts": {
+            "formats": "",
+            "rules": []
+          },
           "scroll": {
             "by": "none",
             "speed": "medium",
