@@ -7,88 +7,158 @@
 
   <!-- build:css css/settings.min.css -->
   <link rel="stylesheet" href="components/rv-common-style/dist/css/rise.min.css">
-  <link rel="stylesheet" href="components/spectrum/spectrum.css">
-  <link rel="stylesheet" href="components/bootstrap3-wysihtml5/dist/css/bootstrap3-wysihtml5.min.css">
-  <link rel="stylesheet" href="components/rv-bootstrap-formhelpers/dist/css/rv-bootstrap-formhelpers.min.css">
-  <link rel="stylesheet" href="components/bootstrap-select/bootstrap-select.min.css">
   <!-- endbuild -->
 
-  <!-- build:css css/editor.min.css -->
-  <link rel="stylesheet" href="components/rv-common-style/dist/css/alignment.min.css">
-  <link rel="stylesheet" href="components/bootstrap-form-components/dist/css/all.min.css">
-  <link rel="stylesheet" href="components/bootstrap3-wysihtml5/dist/css/bootstrap3-wysihtml5-line-height.min.css">
-  <!-- endbuild -->
-
-  <style>
-    html, body {
-      background-color: transparent;
-    }
-
-    body {
-      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-    }
-
-    .wysihtml5-sandbox {
-      min-height: 350px;
+  <style type="text/css">
+    body, html {
+      background: transparent;
     }
   </style>
+
+  <!--FullStory-->
+  <script>
+    window['_fs_is_outer_script'] = true;
+    window['_fs_debug'] = false;
+    window['_fs_host'] = 'www.fullstory.com';
+    window['_fs_org'] = 'U3O';
+    (function(m,n,e,t,l,o,g,y){
+      g=m[e]=function(a,b){g.q?g.q.push([a,b]):g._api(a,b);};g.q=[];
+      o=n.createElement(t);o.async=1;o.src='https://'+_fs_host+'/s/fs.js';
+      y=n.getElementsByTagName(t)[0];y.parentNode.insertBefore(o,y);
+      g.identify=function(i,v){g(l,{uid:i});if(v)g(l,v)};g.setUserVars=function(v){FS(l,v)};
+      g.identifyAccount=function(i,v){o='account';v=v||{};v.acctId=i;FS(o,v)};
+      g.clearUserCookie=function(d,i){d=n.domain;while(1){n.cookie='fs_uid=;domain='+d+
+        ';path=/;expires='+new Date(0);i=d.indexOf('.');if(i<0)break;d=d.slice(i+1)}}
+    })(window,document,'FS','script','user');
+  </script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.20/angular.min.js"></script>
+  <!-- if AngularJS fails to load fallback to a local version -->
+  <script>window.angular || document.write(unescape("%3Cscript src='js/vendor/angular/angular.min.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+
+  <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+  <!-- if TinyMCE fails to load fallback to a local version -->
+  <script>window.tinymce || document.write(unescape("%3Cscript src='js/vendor/tinymce-dist/tinymce.min.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+
 </head>
 <body ng-app="risevision.widget.text.settings" ng-controller="settingsController">
-  <div class="widget">
-    <div class="overlay"></div>
-    <div class="settings">
-      <div class="settings-center">
-        <div class="wrapper container modal-content" ng-controller="textSettingsController" ng-cloak>
-          <div class="modal-header">
-            <h2 id="settings-title"> {{"widget-text.settings" | translate }}
-              <button type="button" ng-click="closeSettings()" class="close">
-                <span>&times;</span>
-                <span class="sr-only">Close</span>
-              </button>
-            </h2>
-            <div class="sticky-wrapper">
-              <widget-button-toolbar save="saveSettings()" cancel="closeSettings()"
-                contribute="https://github.com/Rise-Vision/widget-text">
-              </widget-button-toolbar>
+  <div class="container-fluid image-settings-fs">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content scrollable-list" ng-controller="textSettingsController" ng-cloak>
+
+        <!-- Modal Header-->
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="closeSettings()">
+            <i class="fa fa-times half-top"></i>
+          </button>
+          <h2 class="modal-title">
+            {{"widget-text.settings" | translate }}
+            <a class="btn btn-link" href="https://github.com/Rise-Vision/widget-text" target="_blank">
+              <i class="fa fa-github fa-2x icon-gray"></i>
+            </a>
+          </h2>
+        </div>
+
+        <!-- Modal Body-->
+        <form role="form" name="settingsForm">
+          <div class="modal-body">
+            <scroll-setting scroll="settings.additionalParams.scroll"></scroll-setting>
+
+            <textarea ui-tinymce="tinymceOptions" ng-model="settings.additionalParams.data" ng-if="tinymceOptions"></textarea>
+          </div><!-- .modal-body -->
+
+          <hr>
+
+          <!-- Modal Footer-->
+          <div class="modal-footer">
+            <!-- Button Toolbar -->
+            <widget-button-toolbar save="saveSettings()" cancel="closeSettings()" disable-save="settingsForm.$invalid">
+            </widget-button-toolbar>
+          </div>
+
+        </form>
+
+        <!-- Custom Font Modal -->
+        <div class="custom-font modal" custom-font tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                  <i class="fa fa-times half-top"></i>
+                </button>
+                <h2 class="modal-title">{{"font-setting.custom-font" | translate}}</h2>
+              </div>
+
+              <form role="form" name="customFontForm">
+                <div class="modal-body">
+                  <url-field url="url" ng-model="customfont" valid init-empty></url-field>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="select btn btn-primary btn-fixed-width" ng-click="addFont()" ng-disabled="customFontForm.$invalid">
+                    <span>{{"common.select" | translate}}</span>
+                    <i class="fa fa-white fa-check icon-right"></i>
+                  </button>
+                  <button type="button" class="cancel btn btn-default btn-fixed-width" data-dismiss="modal">
+                    <span>{{"common.cancel" | translate}}</span>
+                    <i class="fa fa-white fa-times icon-right"></i>
+                  </button>
+                </div>
+              </form>
+
             </div>
           </div>
-          <div id="settings-alert" class="alert alert-danger" ng-show="onError"></div>
-          <form role="form" name="settingsform">
-            <scroll-setting scroll="settings.additionalParams.scroll"></scroll-setting>
-            <textarea wysihtml5 id="editable" class="form-control" name="editable" stylesheets="stylesheets"
-              data="settings.additionalParams.data" background="settings.additionalParams.background"></textarea>
-          </form>
         </div>
-      </div>
-    </div>
-  </div>
+
+      </div><!-- .modal-content -->
+    </div><!-- .modal-dialog -->
+  </div><!-- .container-fluid -->
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+  <script>
+    if (typeof jQuery == "undefined") {
+      document.write(unescape("%3Cscript src='js/vendor/jquery/dist/jquery.min.js' type='text/javascript'%3E%3C/script%3E"));
+    }
+  </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+  <script>
+    if (typeof WebFont == "undefined") {
+      document.write(unescape("%3Cscript src='js/vendor/webfontloader/webfontloader.js' type='text/javascript'%3E%3C/script%3E"));
+    }
+  </script>
 
   <!-- build:js js/settings.min.js -->
   <script src="components/angular-translate/angular-translate.js"></script>
+  <script src="components/angular-sanitize/angular-sanitize.js"></script>
   <script src="components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
   <script src="components/rv-common-i18n/dist/i18n.js"></script>
   <script src="components/bootstrap-sass-official/assets/javascripts/bootstrap.js"></script>
   <script src="components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-  <script src="components/rv-bootstrap-formhelpers/dist/js/rv-bootstrap-formhelpers.js"></script>
-  <script src="components/bootstrap-select/bootstrap-select.min.js"></script>
-  <script src="components/bootstrap-form-components/dist/js/bootstrap-font-picker.js"></script>
-  <script src="components/bootstrap-form-components/dist/js/bootstrap-font-size-picker.js"></script>
-  <script src="components/spectrum/spectrum.js"></script>
-  <script src="components/widget-settings-ui-core/dist/widget-settings-ui-core.js"></script>
-  <script src="components/widget-settings-ui-components/dist/js/widget-settings-ui-components.js"></script>
+
+  <!-- Scroll Setting -->
   <script src="components/widget-settings-ui-components/dist/js/angular/tooltip.js"></script>
   <script src="components/widget-settings-ui-components/dist/js/angular/scroll-setting.js"></script>
+
+  <!-- TinyMCE -->
+  <script src="components/angular-ui-tinymce/src/tinymce.js"></script>
+
+  <!-- URL Field -->
+  <script src="components/widget-settings-ui-components/dist/js/angular/url-field.js"></script>
+
+  <!-- Control Buttons Toolbar -->
   <script src="components/widget-settings-ui-components/dist/js/angular/widget-button-toolbar.js"></script>
-  <script src="components/wysihtml5/dist/wysihtml5-0.4.0pre.js"></script>
-  <script src="components/bootstrap3-wysihtml5/dist/js/bootstrap3-wysihtml5.min.js"></script>
-  <script src="components/bootstrap3-wysihtml5/dist/js/angular/dtv-bootstrap3-wysihtml5.min.js"></script>
-  <script src="components/widget-common/dist/common.js"></script>
-  <script src="config/config.js"></script>
+
   <script src="settings/settings-app.js"></script>
+  <script src="config/config.js"></script>
+  <script src="components/widget-settings-ui-core/dist/widget-settings-ui-core.js"></script>
   <script src="settings/ctr-text-settings.js"></script>
+  <script src="settings/dtv-custom-font.js"></script>
+  <script src="settings/cst-font-settings.js"></script>
+  <script src="settings/svc-google-fonts.js"></script>
   <!-- endbuild -->
 
   <!-- build:e2egadgets -->

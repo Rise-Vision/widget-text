@@ -33,7 +33,18 @@
       "./src/components/gsap/src/minified/TweenLite.min.js",
       "./src/components/gsap/src/minified/plugins/CSSPlugin.min.js",
       "./src/components/gsap/src/minified/utils/Draggable.min.js",
-      "./src/components/gsap/src/minified/plugins/ScrollToPlugin.min.js"
+      "./src/components/gsap/src/minified/plugins/ScrollToPlugin.min.js",
+      "./src/components/tinymce-dist/plugins/**/*",
+      "./src/components/tinymce-dist/skins/**/*",
+      "./src/components/tinymce-dist/themes/**/*",
+      "./src/components/tinymce-dist/tinymce*.js",
+      "./src/components/angular/angular*.js",
+      "./src/components/angular/*.gzip",
+      "./src/components/angular/*.map",
+      "./src/components/angular/*.css"
+    ],
+    vendorNodeFiles = [
+      "./node_modules/webfontloader/webfontloader.js"
     ];
 
   gulp.task("bump", function() {
@@ -66,7 +77,7 @@
   gulp.task("source", ["lint"], function () {
     var isProd = (env === "prod");
 
-    return gulp.src(["./src/*.html"])
+    return gulp.src(htmlFiles)
       .pipe(gulpif(isProd,
         // Minify for production.
         usemin({
@@ -91,20 +102,9 @@
       }))
   });
 
-  gulp.task("source-dev", ["lint"], function () {
-    return gulp.src(["./src/*.html"])
-      .pipe(usemin())
-      .pipe(gulp.dest("dist/"));
-  });
-
   gulp.task("fonts", function() {
     return gulp.src("src/components/common-style/dist/fonts/**/*")
       .pipe(gulp.dest("dist/fonts"));
-  });
-
-  gulp.task("images", function() {
-    return gulp.src("src/components/rv-bootstrap-formhelpers/img/bootstrap-formhelpers-googlefonts.png")
-      .pipe(gulp.dest("dist/img"));
   });
 
   gulp.task("i18n", function(cb) {
@@ -112,17 +112,18 @@
       .pipe(gulp.dest("dist/locales"));
   });
 
-  gulp.task("vendor", function(cb) {
+  gulp.task("vendor_node", function(cb) {
+    return gulp.src(vendorNodeFiles, {base: "./node_modules"})
+      .pipe(gulp.dest("dist/js/vendor"));
+  });
+
+  gulp.task("vendor", ["vendor_node"], function(cb) {
     return gulp.src(vendorFiles, {base: "./src/components"})
       .pipe(gulp.dest("dist/js/vendor"));
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["source", "fonts", "images", "i18n", "vendor"], ["unminify"], cb);
-  });
-
-  gulp.task("build-dev", function (cb) {
-    runSequence(["clean", "config"], ["source-dev", "fonts", "images", "i18n", "vendor"], cb);
+    runSequence(["clean", "config"], ["source", "fonts", "i18n", "vendor"], ["unminify"], cb);
   });
 
   gulp.task("webdriver_update", factory.webdriveUpdate());
@@ -152,14 +153,10 @@
   });
 
   gulp.task("test", function(cb) {
-    runSequence("test:e2e", "test:integration", cb);
-  });
-
-  gulp.task("watch", function() {
-    gulp.watch("./src/**/*", ["build"]);
+    runSequence("test:e2e"/*, "test:integration"*/, cb);
   });
 
   gulp.task("default", function(cb) {
-    runSequence("test", "build", cb);
+    runSequence("build", cb);
   });
 })();
