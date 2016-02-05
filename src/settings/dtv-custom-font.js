@@ -20,12 +20,12 @@ angular.module("risevision.widget.text.settings")
           // Apply custom font to preview text.
           $scope.addFont = function() {
             var family = getFamily(),
-              rule;
+              url;
 
             if (family) {
-              rule = "font-family: " + family + "; " + "src: url('" + $scope.url.trim() + "');";
+              url = $scope.url.trim();
               // broadcast custom font loaded
-              $scope.$emit("customFontLoaded", {family:family, rule:rule});
+              $scope.$emit("customFontLoaded", {family:family, url:url});
             }
 
             $el.modal("hide");

@@ -2,7 +2,7 @@ angular.module("risevision.widget.text.settings")
   .factory("googleFonts", ["$log", "$q", "$window", "GOOGLE_FONT_FAMILIES",
     function($log, $q, $window, GOOGLE_FONT_FAMILIES) {
 
-      var fallback = ",sans-serif;",
+      var fallback = ",sans-serif",
         fonts = "",
         urls = [],
         factory = {},
@@ -20,7 +20,7 @@ angular.module("risevision.widget.text.settings")
             angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
               if (inactiveFonts.indexOf(family) === -1) {
                 urls.push("http://fonts.googleapis.com/css?family=" + family);
-                fonts += family + "=" + family + fallback;
+                fonts += family + "=" + family + fallback + ";";
               }
             });
 
@@ -39,6 +39,19 @@ angular.module("risevision.widget.text.settings")
         });
 
         return deferred.promise;
+
+      };
+
+      factory.getFontsUsed = function(familyList) {
+        var fontsUsed = [];
+
+        angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
+          if (familyList.indexOf(family) !== -1) {
+            fontsUsed.push(family + fallback);
+          }
+        });
+
+        return fontsUsed;
 
       };
 
