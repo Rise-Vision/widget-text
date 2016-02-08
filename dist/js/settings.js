@@ -10585,7 +10585,7 @@ angular.module("risevision.widget.text.settings")
           active: function() {
             angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
               if (inactiveFonts.indexOf(family) === -1) {
-                urls.push("http://fonts.googleapis.com/css?family=" + family);
+                urls.push("//fonts.googleapis.com/css?family=" + family);
                 fonts += family + "=" + family + fallback + ";";
               }
             });
