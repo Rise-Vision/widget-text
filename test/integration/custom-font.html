@@ -23,6 +23,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/CSSPlugin.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/utils/Draggable.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/ScrollToPlugin.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
 
   <script src="../../src/components/auto-scroll/jquery.auto-scroll.js"></script>
   <script src="../../src/components/widget-common/dist/common.js"></script>
@@ -32,13 +33,12 @@
   <script>
     suite("Custom Font", function () {
       test("should load a custom font", function() {
+        // polyserve testing in browser, change to below
+        // assert.equal(document.styleSheets[0].cssRules[17].cssText,
         assert.equal(document.styleSheets[0].cssRules[6].cssText,
-          '@font-face { font-family: \'"BrushScriptStd"\'; src: url("http://localhost:2000/components/widget-text/test/integration/%22https://my.custom.font/BrushScriptStd.otf%22"); }');
+          '@font-face { font-family: BrushScriptStd; src: url("https://my.custom.font/BrushScriptStd.otf"); }');
       });
 
-      test("should create a CSS rule for a custom font", function() {
-        assert.equal(document.styleSheets[1].cssRules[0].cssText, '.wysiwyg-font-family-\\"brushscriptstd\\" { font-family: \'"BrushScriptStd"\'; }');
-      });
     });
   </script>
 </body>

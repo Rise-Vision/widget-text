@@ -47,7 +47,7 @@ angular.module("risevision.widget.text.settings")
 
         angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
           if (familyList.indexOf(family) !== -1) {
-            fontsUsed.push(family + fallback);
+            fontsUsed.push(family);
           }
         });
 

@@ -1,9 +1,9 @@
-/* global gadgets:false */
+/* global gadgets:false, WebFont:false */
 
 var RiseVision = RiseVision || {};
 RiseVision.Text = {};
 
-RiseVision.Text = (function(gadgets) {
+RiseVision.Text = (function(gadgets, WebFont) {
   "use strict";
 
   var _additionalParams = null,
@@ -13,58 +13,54 @@ RiseVision.Text = (function(gadgets) {
   /*
    *  Private Methods
    */
-  function _init() {
-    var i = 0,
-      rules = [],
-      fontRules = [];
+  function _loadGoogleFonts(fonts, cb) {
 
+    function complete() {
+      if (cb && typeof cb === "function"){
+        cb();
+      }
+    }
+
+    if (Array.isArray(fonts) && fonts.length > 0) {
+      WebFont.load({
+        google: {
+          families: fonts
+        },
+        timeout: 2000,
+        active: function() {
+          complete();
+        },
+        inactive: function() {
+          console.warn("No google fonts were loaded");
+          complete();
+        },
+        fontinactive: function(familyName) {
+          console.warn("Google font '" + familyName + "' failed to load");
+        }
+      });
+    }
+    else {
+      complete();
+    }
+
+  }
+
+  function _init() {
     document.querySelector(".page").innerHTML = _additionalParams.data;
 
-    // Iterate over the data to find any custom or Google fonts that are being used.
-    $.each($("<div/>").html(_additionalParams.data).find("span").addBack(), function() {
-      fontRules = _getFontRules(this);
+    _loadGoogleFonts(_additionalParams.googleFonts, function () {
+      // load custom fonts
+      $.each(_additionalParams.customFonts.fonts, function (index, font) {
+        _utils.loadCustomFont(font.family, font.url);
+      });
 
-      for (i = 0; i < fontRules.length; i++) {
-        rules.push(fontRules[i]);
-      }
+      $("#container").autoScroll(_additionalParams.scroll).on("done", function() {
+        _done();
+      });
+
+      _ready();
     });
 
-    _utils.addCSSRules(rules);
-
-    $("#container").autoScroll(_additionalParams.scroll).on("done", function() {
-      _done();
-    });
-
-    _ready();
-  }
-
-  function _createFontRule(font) {
-    return ".wysiwyg-font-family-" + font.replace(/ /g, "-").toLowerCase() + " { font-family: '" + font + "'; }";
-  }
-
-  // Create CSS rules for fonts.
-  function _getFontRules(elem) {
-    var rules = [],
-      googleFont = $(elem).attr("data-google-font"),
-      customFont = $(elem).attr("data-custom-font");
-
-    // Load Google font.
-    if (googleFont) {
-      _utils.loadGoogleFont(googleFont);
-
-      // Add CSS for the Google font.
-      rules.push(_createFontRule(googleFont));
-    }
-
-    // Load custom font.
-    if (customFont) {
-      _utils.loadCustomFont(customFont, $(elem).attr("data-custom-font-url"));
-
-      // Add CSS for the custom font.
-      rules.push(_createFontRule(customFont));
-    }
-
-    return rules;
   }
 
   function _getTableName() {
@@ -124,4 +120,4 @@ RiseVision.Text = (function(gadgets) {
     "setAdditionalParams": setAdditionalParams,
     "stop": stop
   };
-})(gadgets);
+})(gadgets, WebFont);

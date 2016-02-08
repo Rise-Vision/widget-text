@@ -23,6 +23,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/CSSPlugin.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/utils/Draggable.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.7/plugins/ScrollToPlugin.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
 
   <script src="../../src/components/auto-scroll/jquery.auto-scroll.js"></script>
   <script src="../../src/components/widget-common/dist/common.js"></script>
@@ -31,13 +32,12 @@
 
   <script>
     suite("Google Font", function () {
-      test("should load a Google font", function() {
-        assert.equal(document.styleSheets[1].href, "https://fonts.googleapis.com/css?family=\\%22Aclonica\\%22");
+      test("should load Google fonts", function() {
+        // polyserve testing in browser, change to below
+        // assert.equal(document.styleSheets[2].href, "http://fonts.googleapis.com/css?family=Bitter%7CSource+Sans+Pro");
+        assert.equal(document.styleSheets[1].href, "http://fonts.googleapis.com/css?family=Bitter%7CSource+Sans+Pro");
       });
 
-      test("should create a CSS rule for a Google font", function() {
-        assert.equal(document.styleSheets[2].cssRules[0].cssText, '.wysiwyg-font-family-\\"aclonica\\" { font-family: \'"Aclonica"\'; }');
-      });
     });
   </script>
 </body>

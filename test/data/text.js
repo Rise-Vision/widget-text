@@ -6,6 +6,11 @@
     "params": {},
     "additionalParams": {
       "data": "<p>My Text</p>",
+      "customFonts": {
+        "formats": "",
+        "fonts": []
+      },
+      "googleFonts": [],
       "scroll": {
         "by": "continuous",
         "speed": "fastest",
