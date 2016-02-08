@@ -30,11 +30,11 @@ angular.module("risevision.widget.text.settings")
       function addCustomFontsToFrame(editor) {
         var doc = editor.getDoc();
 
-        $timeout(function getSheet() {
-          var sheet = doc.styleSheets[0];
+        if ($scope.settings.additionalParams.customFonts.fonts.length > 0) {
+          $timeout(function getSheet() {
+            var sheet = doc.styleSheets[0];
 
-          if (sheet) {
-            if ($scope.settings.additionalParams.customFonts.fonts.length > 0) {
+            if (sheet) {
               angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
                 var rule = "font-family: " + font.family + "; " + "src: url('" + font.url + "');";
 
@@ -42,11 +42,12 @@ angular.module("risevision.widget.text.settings")
                 sheet.addRule("@font-face", rule);
               });
             }
-          }
-          else {
-            getSheet();
-          }
-        }, 200);
+            else {
+              getSheet();
+            }
+          }, 200);
+        }
+
       }
 
       function addCustomFontsToDocument(fonts, cb) {

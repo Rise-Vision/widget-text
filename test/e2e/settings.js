@@ -297,7 +297,7 @@
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["Domine,sans-serif"],
+              "googleFonts": ["Domine"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
