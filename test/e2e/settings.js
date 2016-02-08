@@ -206,8 +206,9 @@
             "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test</span></p>",
             "customFonts": {
               "formats": "",
-              "rules": []
+              "fonts": []
             },
+            "googleFonts": [],
             "scroll": {
               "by": "none",
               "speed": "medium",
@@ -241,8 +242,9 @@
               "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: brushscriptstd, sans-serif;\"> with a custom font!</span></span></p>",
               "customFonts": {
                 "formats": "BrushScriptStd=brushscriptstd,sans-serif;",
-                "rules": ["font-family: BrushScriptStd; src: url('" + customFontUrl + "');"]
+                "fonts": [{"family": "BrushScriptStd", "url": customFontUrl}]
               },
+              "googleFonts": [],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
@@ -273,6 +275,53 @@
         browser.ignoreSynchronization = true;
 
         element(by.css(".mce-content-body")).isDisplayed().sendKeys(" with a custom font!");
+
+        browser.driver.switchTo().defaultContent();
+        browser.ignoreSynchronization = false;
+
+        element(by.id("save")).click();
+
+        expect(browser.executeScript("return window.result")).to.eventually.deep.equal({
+          "params": "",
+          "additionalParams": JSON.stringify(settings.additionalParams)
+        });
+
+      });
+
+      it("Should correctly save settings and provide google fonts used", function () {
+        var settings = {
+            "params": {},
+            "additionalParams": {
+              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: Domine, sans-serif;\"> with a google font!</span></span></p>",
+              "customFonts": {
+                "formats": "",
+                "fonts": []
+              },
+              "googleFonts": ["Domine,sans-serif"],
+              "scroll": {
+                "by": "none",
+                "speed": "medium",
+                "pause": 5,
+                "pud": 10
+              }
+            }
+          };
+
+        browser.driver.switchTo().frame(0);
+        browser.ignoreSynchronization = true;
+
+        element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+
+        browser.driver.switchTo().defaultContent();
+        browser.ignoreSynchronization = false;
+
+        element(by.css(".mce-btn[aria-label='Font Family']")).click();
+        element(by.css("#mceu_61-text")).click();
+
+        browser.driver.switchTo().frame(0);
+        browser.ignoreSynchronization = true;
+
+        element(by.css(".mce-content-body")).isDisplayed().sendKeys(" with a google font!");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;

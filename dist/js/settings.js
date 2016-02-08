@@ -10278,10 +10278,12 @@ angular.module("risevision.widget.text.settings")
           var sheet = doc.styleSheets[0];
 
           if (sheet) {
-            if ($scope.settings.additionalParams.customFonts.rules.length > 0) {
-              angular.forEach($scope.settings.additionalParams.customFonts.rules, function (value) {
+            if ($scope.settings.additionalParams.customFonts.fonts.length > 0) {
+              angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
+                var rule = "font-family: " + font.family + "; " + "src: url('" + font.url + "');";
+
                 // load font
-                sheet.addRule("@font-face", value);
+                sheet.addRule("@font-face", rule);
               });
             }
           }
@@ -10291,15 +10293,17 @@ angular.module("risevision.widget.text.settings")
         }, 200);
       }
 
-      function addCustomFontsToDocument(rules, cb) {
+      function addCustomFontsToDocument(fonts, cb) {
         $timeout(function getSheet() {
           var sheet = document.styleSheets[0];
 
           if (sheet) {
-            if (Array.isArray(rules) && rules.length > 0) {
-              angular.forEach(rules, function (value) {
+            if (Array.isArray(fonts) && fonts.length > 0) {
+              angular.forEach(fonts, function (font) {
+                var rule = "font-family: " + font.family + "; " + "src: url('" + font.url + "');";
+
                 // load font
-                sheet.addRule("@font-face", value);
+                sheet.addRule("@font-face", rule);
               });
 
               if (cb && typeof cb === "function") {
@@ -10391,6 +10395,32 @@ angular.module("risevision.widget.text.settings")
         };
       }
 
+      $scope.processFonts = function () {
+        var wrapper = document.createElement("div"),
+          families = "",
+          $wrapper;
+
+        wrapper.innerHTML = $scope.settings.additionalParams.data;
+        $wrapper = $(wrapper);
+
+        angular.forEach($wrapper.find("span"), function(span) {
+          var family = $(span).css("font-family");
+          // remove single quotes (if applied) and fallback fonts
+          family = family.replace(/[']/g, "").split(",")[0];
+
+          if (families.indexOf(family) === -1) {
+            // add font family to the list
+            families += family + ",";
+          }
+        });
+
+        // save which google fonts were used
+        $scope.settings.additionalParams.googleFonts = googleFonts.getFontsUsed(families);
+
+        // proceed with saving settings
+        $scope.$parent.saveSettings();
+      };
+
       $scope.$watch("tinymceOptions.font_formats", function (value) {
         if (typeof value !== "undefined") {
           if (!_isLoading) {
@@ -10425,11 +10455,11 @@ angular.module("risevision.widget.text.settings")
       });
 
       $scope.$on("customFontLoaded", function (e, data) {
-        addCustomFontsToDocument([data.rule]);
+        addCustomFontsToDocument([data]);
 
         _customFontToSelect = data.family.toLowerCase() + ",sans-serif";
 
-        $scope.settings.additionalParams.customFonts.rules.push(data.rule);
+        $scope.settings.additionalParams.customFonts.fonts.push(data);
         $scope.settings.additionalParams.customFonts.formats += data.family + "=" + _customFontToSelect + ";";
 
         // update value of font_formats
@@ -10443,8 +10473,9 @@ angular.module("risevision.widget.text.settings")
       "data": "",
       "customFonts": {
         "formats": "",
-        "rules": []
+        "fonts": []
       },
+      "googleFonts": [],
       "scroll": {}
     }
   });
@@ -10471,12 +10502,12 @@ angular.module("risevision.widget.text.settings")
           // Apply custom font to preview text.
           $scope.addFont = function() {
             var family = getFamily(),
-              rule;
+              url;
 
             if (family) {
-              rule = "font-family: " + family + "; " + "src: url('" + $scope.url.trim() + "');";
+              url = $scope.url.trim();
               // broadcast custom font loaded
-              $scope.$emit("customFontLoaded", {family:family, rule:rule});
+              $scope.$emit("customFontLoaded", {family:family, url:url});
             }
 
             $el.modal("hide");
@@ -10536,7 +10567,7 @@ angular.module("risevision.widget.text.settings")
   .factory("googleFonts", ["$log", "$q", "$window", "GOOGLE_FONT_FAMILIES",
     function($log, $q, $window, GOOGLE_FONT_FAMILIES) {
 
-      var fallback = ",sans-serif;",
+      var fallback = ",sans-serif",
         fonts = "",
         urls = [],
         factory = {},
@@ -10554,7 +10585,7 @@ angular.module("risevision.widget.text.settings")
             angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
               if (inactiveFonts.indexOf(family) === -1) {
                 urls.push("http://fonts.googleapis.com/css?family=" + family);
-                fonts += family + "=" + family + fallback;
+                fonts += family + "=" + family + fallback + ";";
               }
             });
 
@@ -10573,6 +10604,19 @@ angular.module("risevision.widget.text.settings")
         });
 
         return deferred.promise;
+
+      };
+
+      factory.getFontsUsed = function(familyList) {
+        var fontsUsed = [];
+
+        angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
+          if (familyList.indexOf(family) !== -1) {
+            fontsUsed.push(family + fallback);
+          }
+        });
+
+        return fontsUsed;
 
       };
 
