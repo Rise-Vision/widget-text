@@ -51,27 +51,34 @@ angular.module("risevision.widget.text.settings")
       }
 
       function addCustomFontsToDocument(fonts, cb) {
-        $timeout(function getSheet() {
-          var sheet = document.styleSheets[0];
 
-          if (sheet) {
-            if (Array.isArray(fonts) && fonts.length > 0) {
+        function complete() {
+          if (cb && typeof cb === "function") {
+            cb();
+          }
+        }
+
+        if (Array.isArray(fonts) && fonts.length > 0) {
+          $timeout(function getSheet() {
+            var sheet = document.styleSheets[0];
+
+            if (sheet) {
               angular.forEach(fonts, function (font) {
                 var rule = "font-family: " + font.family + "; " + "src: url('" + font.url + "');";
 
                 // load font
                 sheet.addRule("@font-face", rule);
               });
-
-              if (cb && typeof cb === "function") {
-                cb();
-              }
             }
-          }
-          else {
-            getSheet();
-          }
-        }, 200);
+            else {
+              getSheet();
+            }
+          }, 200);
+        }
+        else {
+          complete();
+        }
+
       }
 
       // Initialize TinyMCE.
@@ -97,8 +104,8 @@ angular.module("risevision.widget.text.settings")
               addCustomFontsToFrame(editor);
 
               if (_isLoading) {
-                // only call this when initially loading, it loads all previously saved custom rules
-                addCustomFontsToDocument($scope.settings.additionalParams.customFonts.rules);
+                // only call this when initially loading, it loads all previously saved custom fonts
+                addCustomFontsToDocument($scope.settings.additionalParams.customFonts.fonts);
 
                 // force fontselect and fontsize tools to select defaults
                 editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
