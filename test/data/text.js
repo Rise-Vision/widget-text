@@ -10,7 +10,9 @@
         "formats": "",
         "fonts": []
       },
-      "googleFonts": [],
+      "googleFonts": [
+        "Bitter", "Source Sans Pro"
+      ],
       "scroll": {
         "by": "continuous",
         "speed": "fastest",
