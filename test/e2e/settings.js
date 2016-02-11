@@ -53,10 +53,10 @@
           });
         });
 
-        it("should show 'Use Custom Font' first", function() {
+        it("should show 'Add Custom Font' first", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
-          expect(element(by.css("#mceu_33-text")).getText()).to.eventually.equal("Use Custom Font");
+          expect(element(by.css("#mceu_33-text")).getText()).to.eventually.equal("Add Custom Font");
         });
 
         it("should show font family", function() {
