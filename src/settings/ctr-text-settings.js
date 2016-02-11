@@ -86,7 +86,7 @@ angular.module("risevision.widget.text.settings")
         $scope.tinymceOptions = {
           plugins: "code colorpicker textcolor wordcount",
           skin_url: "//s3.amazonaws.com/rise-common/styles/tinymce/rise",
-          font_formats: "Use Custom Font=custom;" + $scope.settings.additionalParams.customFonts.formats + FONT_FAMILIES + _googleFonts,
+          font_formats: "Add Custom Font=custom;" + $scope.settings.additionalParams.customFonts.formats + FONT_FAMILIES + _googleFonts,
           content_css: _googleFontUrls,
           style_formats_merge: true,
           fontsize_formats: FONT_SIZES,
@@ -227,7 +227,7 @@ angular.module("risevision.widget.text.settings")
         $scope.settings.additionalParams.customFonts.formats += data.family + "=" + _customFontToSelect + ";";
 
         // update value of font_formats
-        $scope.tinymceOptions.font_formats = "Use Custom Font=custom;" + $scope.settings.additionalParams.customFonts.formats + FONT_FAMILIES + _googleFonts;
+        $scope.tinymceOptions.font_formats = "Add Custom Font=custom;" + $scope.settings.additionalParams.customFonts.formats + FONT_FAMILIES + _googleFonts;
       });
 
     }])
