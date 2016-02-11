@@ -87,6 +87,9 @@ angular.module("risevision.widget.text.settings")
           plugins: "code colorpicker textcolor wordcount",
           skin_url: "//s3.amazonaws.com/rise-common/styles/tinymce/rise",
           font_formats: "Add Custom Font=custom;" + $scope.settings.additionalParams.customFonts.formats + FONT_FAMILIES + _googleFonts,
+          formats: {
+            fontsize: { inline: "span", split: false, styles: { fontSize: "%value" } }
+          },
           content_css: _googleFontUrls,
           style_formats_merge: true,
           fontsize_formats: FONT_SIZES,
