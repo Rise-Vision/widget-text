@@ -194,6 +194,14 @@
 
           expect(element(by.css(".mce-btn[aria-label='Font Family'] .mce-txt")).getText()).to.eventually.equal("BrushScriptStd");
         });
+
+        it("should set font family with that has spaces and single quotes in file name", function() {
+          url.clear();
+          url.sendKeys("https://my.custom.font/My%20font'%20name.otf");
+          element(by.css(".custom-font .select")).click();
+
+          expect(element(by.css(".mce-btn[aria-label='Font Family'] .mce-txt")).getText()).to.eventually.equal("My font' name");
+        });
       });
     });
 
@@ -235,14 +243,14 @@
       });
 
       it("Should correctly save settings with a custom font", function () {
-        var customFontUrl = "https://my.custom.font/BrushScriptStd.otf",
+        var customFontUrl = "https://my.custom.font/My%20font'%20name.otf",
           settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: brushscriptstd, sans-serif;\"> with a custom font!</span></span></p>",
+              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: \'my font\\\' name\', sans-serif;\"> with a custom font!</span></span></p>",
               "customFonts": {
-                "formats": "BrushScriptStd=brushscriptstd,sans-serif;",
-                "fonts": [{"family": "BrushScriptStd", "url": customFontUrl}]
+                "formats": "My font' name=my font\\' name,sans-serif;",
+                "fonts": [{"family": "My font\\' name", "url": "https://my.custom.font/My%20font\\'%20name.otf"}]
               },
               "googleFonts": [],
               "scroll": {

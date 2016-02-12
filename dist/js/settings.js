@@ -10466,11 +10466,17 @@ angular.module("risevision.widget.text.settings")
       });
 
       $scope.$on("customFontLoaded", function (e, data) {
-        addCustomFontsToDocument([data]);
+        var font = {
+          // escape potential single quotes in family name
+          "family": data.family.replace(/'/g, "\\'"),
+          "url": data.url
+        };
 
-        _customFontToSelect = data.family.toLowerCase() + ",sans-serif";
+        addCustomFontsToDocument([font]);
 
-        $scope.settings.additionalParams.customFonts.fonts.push(data);
+        _customFontToSelect = font.family.toLowerCase() + ",sans-serif";
+
+        $scope.settings.additionalParams.customFonts.fonts.push(font);
         $scope.settings.additionalParams.customFonts.formats += data.family + "=" + _customFontToSelect + ";";
 
         // update value of font_formats
@@ -10503,8 +10509,12 @@ angular.module("risevision.widget.text.settings")
 
           // Extract font name from font URL.
           function getFamily() {
+            var family = null;
+
             if ($scope.url) {
-              return $scope.url.split("/").pop().split(".")[0];
+              // decode escape sequences to account for spaces in font name
+              family = decodeURI($scope.url.trim());
+              return family.split("/").pop().split(".")[0];
             }
 
             return null;
@@ -10517,6 +10527,8 @@ angular.module("risevision.widget.text.settings")
 
             if (family) {
               url = $scope.url.trim();
+              // escape potential single quotes in url
+              url = url.replace(/'/g, "\\'");
               // broadcast custom font loaded
               $scope.$emit("customFontLoaded", {family:family, url:url});
             }

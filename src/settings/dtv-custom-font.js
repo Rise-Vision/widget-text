@@ -10,8 +10,12 @@ angular.module("risevision.widget.text.settings")
 
           // Extract font name from font URL.
           function getFamily() {
+            var family = null;
+
             if ($scope.url) {
-              return $scope.url.split("/").pop().split(".")[0];
+              // decode escape sequences to account for spaces in font name
+              family = decodeURI($scope.url.trim());
+              return family.split("/").pop().split(".")[0];
             }
 
             return null;
@@ -24,6 +28,8 @@ angular.module("risevision.widget.text.settings")
 
             if (family) {
               url = $scope.url.trim();
+              // escape potential single quotes in url
+              url = url.replace(/'/g, "\\'");
               // broadcast custom font loaded
               $scope.$emit("customFontLoaded", {family:family, url:url});
             }

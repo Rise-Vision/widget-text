@@ -7,10 +7,10 @@
     "additionalParams": {
       "data": "<p><span style=\"font-size: 24px; font-family: brushscriptstd, sans-serif;\">Custom Font</span></p>",
       "customFonts": {
-        "formats": "BrushScriptStd=brushscriptstd,sans-serif;",
+        "formats": "My font' name=my font\\' name,sans-serif;",
         "fonts": [{
-          "family": "BrushScriptStd",
-          "url": "https://my.custom.font/BrushScriptStd.otf"
+          "family": "My font\\' name",
+          "url": "https://my.custom.font/My%20font\\'%20name.otf"
         }]
       },
       "googleFonts": [],

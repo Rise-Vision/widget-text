@@ -222,11 +222,17 @@ angular.module("risevision.widget.text.settings")
       });
 
       $scope.$on("customFontLoaded", function (e, data) {
-        addCustomFontsToDocument([data]);
+        var font = {
+          // escape potential single quotes in family name
+          "family": data.family.replace(/'/g, "\\'"),
+          "url": data.url
+        };
 
-        _customFontToSelect = data.family.toLowerCase() + ",sans-serif";
+        addCustomFontsToDocument([font]);
 
-        $scope.settings.additionalParams.customFonts.fonts.push(data);
+        _customFontToSelect = font.family.toLowerCase() + ",sans-serif";
+
+        $scope.settings.additionalParams.customFonts.fonts.push(font);
         $scope.settings.additionalParams.customFonts.formats += data.family + "=" + _customFontToSelect + ";";
 
         // update value of font_formats
