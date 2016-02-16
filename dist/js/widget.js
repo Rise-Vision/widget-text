@@ -677,7 +677,11 @@ RiseVision.Text = (function(gadgets, WebFont) {
           complete();
         },
         fontinactive: function(familyName) {
-          console.warn("Google font '" + familyName + "' failed to load");
+          _logEvent({
+            "event": "error",
+            "event_details": "Google font not loaded",
+            "error_details": familyName
+          });
         }
       });
     }
