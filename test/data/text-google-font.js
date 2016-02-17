@@ -6,7 +6,10 @@
     "params": {},
     "additionalParams": {
       "data": "<p><span style=\"font-family: Bitter, sans-serif;\">Google Font 1<span style=\"font-family: 'Source Sans Pro', sans-serif;\">Google Font 2</span></span></span></p>",
-      "customFonts": [],
+      "customFonts": {
+        "formats": "",
+        "fonts": []
+      },
       "googleFonts": [
         "Bitter", "Source Sans Pro"
       ],
