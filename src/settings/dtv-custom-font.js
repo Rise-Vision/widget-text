@@ -28,8 +28,6 @@ angular.module("risevision.widget.text.settings")
 
             if (family) {
               url = $scope.url.trim();
-              // escape potential single quotes in url
-              url = url.replace(/'/g, "\\'");
               // broadcast custom font loaded
               $scope.$emit("customFontLoaded", {family:family, url:url});
             }

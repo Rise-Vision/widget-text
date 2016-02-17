@@ -5,14 +5,11 @@
   window.gadget.settings = {
     "params": {},
     "additionalParams": {
-      "data": "<p><span style=\"font-size: 24px; font-family: brushscriptstd, sans-serif;\">Custom Font</span></p>",
-      "customFonts": {
-        "formats": "My font' name=my font\\' name,sans-serif;",
-        "fonts": [{
-          "family": "My font\\' name",
-          "url": "https://my.custom.font/My%20font\\'%20name.otf"
-        }]
-      },
+      "data": "<p><span style=\"font-size: 24px; font-family: 'my font name', sans-serif;\">Custom Font</span></p>",
+      "customFonts": [{
+        "family": "My font' name",
+        "url": "https://my.custom.font/My%20font'%20name.otf"
+      }],
       "googleFonts": [],
       "scroll": {
         "by": "none",
