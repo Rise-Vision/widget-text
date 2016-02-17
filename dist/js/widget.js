@@ -696,8 +696,8 @@ RiseVision.Text = (function(gadgets, WebFont) {
 
     _loadGoogleFonts(_additionalParams.googleFonts, function () {
       // load custom fonts
-      $.each(_additionalParams.customFonts, function (index, font) {
-        _utils.loadCustomFont(font.family.replace(/'/g, ""), font.url.replace(/'/g, "\\'"));
+      $.each(_additionalParams.customFonts.fonts, function (index, font) {
+        _utils.loadCustomFont(font.family, font.url);
       });
 
       $("#container").autoScroll(_additionalParams.scroll).on("done", function() {

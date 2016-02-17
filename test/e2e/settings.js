@@ -195,12 +195,12 @@
           expect(element(by.css(".mce-btn[aria-label='Font Family'] .mce-txt")).getText()).to.eventually.equal("BrushScriptStd");
         });
 
-        it("should set font family with that has spaces and single quotes in file name", function() {
+        it("should set font family with that has spaces in file name", function() {
           url.clear();
-          url.sendKeys("https://my.custom.font/My%20font'%20name.otf");
+          url.sendKeys("https://my.custom.font/My%20font%20name.otf");
           element(by.css(".custom-font .select")).click();
 
-          expect(element(by.css(".mce-btn[aria-label='Font Family'] .mce-txt")).getText()).to.eventually.equal("My font' name");
+          expect(element(by.css(".mce-btn[aria-label='Font Family'] .mce-txt")).getText()).to.eventually.equal("My font name");
         });
       });
     });
@@ -212,7 +212,10 @@
           "params": {},
           "additionalParams": {
             "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test</span></p>",
-            "customFonts": [],
+            "customFonts": {
+              "formats": "",
+              "fonts": []
+            },
             "googleFonts": [],
             "scroll": {
               "by": "none",
@@ -240,12 +243,15 @@
       });
 
       it("Should correctly save settings with a custom font", function () {
-        var customFontUrl = "https://my.custom.font/My%20font'%20name.otf",
+        var customFontUrl = "https://my.custom.font/My%20font%20name.otf",
           settings = {
             "params": {},
             "additionalParams": {
               "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
-              "customFonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}],
+              "customFonts": {
+                "formats": "My font name=my font name,sans-serif;",
+                "fonts": [{"family": "My font name", "url": "https://my.custom.font/My%20font%20name.otf"}]
+              },
               "googleFonts": [],
               "scroll": {
                 "by": "none",
@@ -295,7 +301,10 @@
             "params": {},
             "additionalParams": {
               "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: Domine, sans-serif;\"> with a google font!</span></span></p>",
-              "customFonts": [],
+              "customFonts": {
+                "formats": "",
+                "fonts": []
+              },
               "googleFonts": ["Domine"],
               "scroll": {
                 "by": "none",
