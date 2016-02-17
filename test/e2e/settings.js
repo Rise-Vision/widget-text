@@ -212,7 +212,10 @@
           "params": {},
           "additionalParams": {
             "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test</span></p>",
-            "customFonts": [],
+            "customFonts": {
+              "formats": "",
+              "fonts": []
+            },
             "googleFonts": [],
             "scroll": {
               "by": "none",
@@ -245,7 +248,10 @@
             "params": {},
             "additionalParams": {
               "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
-              "customFonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}],
+              "customFonts": {
+                "formats": "",
+                "fonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}]
+              },
               "googleFonts": [],
               "scroll": {
                 "by": "none",
@@ -295,7 +301,10 @@
             "params": {},
             "additionalParams": {
               "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: Domine, sans-serif;\"> with a google font!</span></span></p>",
-              "customFonts": [],
+              "customFonts": {
+                "formats": "",
+                "fonts": []
+              },
               "googleFonts": ["Domine"],
               "scroll": {
                 "by": "none",

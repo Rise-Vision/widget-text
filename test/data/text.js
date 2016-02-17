@@ -6,7 +6,10 @@
     "params": {},
     "additionalParams": {
       "data": "<p>My Text</p>",
-      "customFonts": [],
+      "customFonts": {
+        "formats": "",
+        "fonts": []
+      },
       "googleFonts": [
         "Bitter", "Source Sans Pro"
       ],

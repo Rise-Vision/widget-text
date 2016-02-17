@@ -10274,12 +10274,12 @@ angular.module("risevision.widget.text.settings")
       function addCustomFontsToFrame(editor) {
         var doc = editor.getDoc();
 
-        if ($scope.settings.additionalParams.customFonts.length > 0) {
+        if ($scope.settings.additionalParams.customFonts.fonts.length > 0) {
           $timeout(function getSheet() {
             var sheet = doc.styleSheets[0];
 
             if (sheet) {
-              angular.forEach($scope.settings.additionalParams.customFonts, function (font) {
+              angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
                 var rule = "font-family: " + font.family.replace(/'/g, "") + "; " +
                   "src: url('" + font.url.replace(/'/g, "\\'") + "');";
 
@@ -10330,7 +10330,7 @@ angular.module("risevision.widget.text.settings")
       function getCustomFontFormats() {
         var formats = "";
 
-        angular.forEach($scope.settings.additionalParams.customFonts, function (font) {
+        angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
           formats += font.family + "=" + font.family.replace(/'/g, "").toLowerCase() + ",sans-serif;";
         });
 
@@ -10364,7 +10364,7 @@ angular.module("risevision.widget.text.settings")
 
               if (_isLoading) {
                 // only call this when initially loading, it loads all previously saved custom fonts
-                addCustomFontsToDocument($scope.settings.additionalParams.customFonts);
+                addCustomFontsToDocument($scope.settings.additionalParams.customFonts.fonts);
 
                 // force fontselect and fontsize tools to select defaults
                 editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
@@ -10455,7 +10455,7 @@ angular.module("risevision.widget.text.settings")
         }
       });
 
-      $scope.$watch("settings.additionalParams.customFonts", function (value) {
+      $scope.$watch("settings.additionalParams.customFonts.fonts", function (value) {
         if (typeof value !== "undefined") {
           if (_isLoading) {
 
@@ -10465,12 +10465,12 @@ angular.module("risevision.widget.text.settings")
               _googleFonts = data.fonts;
               _googleFontUrls = data.urls;
 
-              // kick off initialization now that customFonts has a value and google fonts have been loaded
+              // kick off initialization now that customFonts.fonts has a value and google fonts have been loaded
               initTinyMCE();
 
             }, function (error) {
               $log.warn(error);
-              // kick off initialization now that customFonts has a value, disregard no google fonts
+              // kick off initialization now that customFonts.fonts has a value, disregard no google fonts
               initTinyMCE();
             }, function (update) {
               $log.debug(update);
@@ -10484,7 +10484,7 @@ angular.module("risevision.widget.text.settings")
 
         _customFontToSelect = data.family.replace(/'/g, "");
 
-        $scope.settings.additionalParams.customFonts.push(data);
+        $scope.settings.additionalParams.customFonts.fonts.push(data);
 
         // update value of font_formats
         $scope.tinymceOptions.font_formats = "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts;
@@ -10495,7 +10495,10 @@ angular.module("risevision.widget.text.settings")
     "params": {},
     "additionalParams": {
       "data": "",
-      "customFonts": [],
+      "customFonts": {
+        "formats": "", // legacy, backwards compatible
+        "fonts": []
+      },
       "googleFonts": [],
       "scroll": {}
     }
