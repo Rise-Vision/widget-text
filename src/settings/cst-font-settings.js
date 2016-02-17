@@ -17,26 +17,5 @@ angular.module("risevision.widget.text.settings")
     "Verdana=verdana,geneva,sans-serif;" +
     "Webdings=webdings;" +
     "Wingdings=wingdings,zapf dingbats;")
-  .constant("GOOGLE_FONT_FAMILIES", [
-    "Abril Fatface", "Alegreya", "Alegreya Sans", "Anonymous Pro", "Archivo Narrow", "Arvo",
-    "Bitter",
-    "Cardo", "Chivo", "Crimson Text",
-    "Domine", "Droid Sans",
-    "Fira Sans",
-    "Inconsolata",
-    "Josefin Slab",
-    "Karla",
-    "Lato", "Libre Baskerville", "Lora",
-    "Merriweather", "Montserrat",
-    "Neuton",
-    "Old Standard TT", "Open Sans",
-    "Playfair Display", "Poppins", "PT Sans", "PT Serif",
-    "Roboto",
-    "Source Sans Pro", "Source Serif Pro",
-    "Ubuntu",
-    "Varela Round",
-    "Vollkorn",
-    "Work Sans"]
-  )
   .constant("FONT_SIZES",
     "8px 9px 10px 11px 12px 14px 18px 24px 30px 36px 48px 60px 72px 96px");

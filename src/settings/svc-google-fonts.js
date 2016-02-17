@@ -1,42 +1,54 @@
 angular.module("risevision.widget.text.settings")
-  .factory("googleFonts", ["$log", "$q", "$window", "GOOGLE_FONT_FAMILIES",
-    function($log, $q, $window, GOOGLE_FONT_FAMILIES) {
+  .factory("googleFonts", ["$log", "$q", "$window", "googleFontLoader",
+    function($log, $q, $window, googleFontLoader) {
 
       var fallback = ",sans-serif",
         fonts = "",
         urls = [],
+        families = [],
         factory = {},
         inactiveFonts = [];
 
       factory.getFonts = function() {
-        var deferred = $q.defer();
+        var deferred = $q.defer(),
+          totalFonts = 100;
 
-        $window.WebFont.load({
-          google: {
-            families: GOOGLE_FONT_FAMILIES
-          },
-          timeout: 2000,
-          active: function() {
-            angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
-              if (inactiveFonts.indexOf(family) === -1) {
-                urls.push("//fonts.googleapis.com/css?family=" + family);
-                fonts += family + "=" + family + fallback + ";";
+        families = [];
+
+        googleFontLoader.getPopularFonts()
+          .then(function(resp) {
+            if (resp.data && resp.data.items) {
+              for (var i = 0; i < totalFonts; i++) {
+                families.push(resp.data.items[i].family);
+              }
+            }
+
+            $window.WebFont.load({
+              google: {
+                families: families
+              },
+              timeout: 2000,
+              active: function() {
+                angular.forEach(families, function (family) {
+                  if (inactiveFonts.indexOf(family) === -1) {
+                    urls.push("//fonts.googleapis.com/css?family=" + family);
+                    fonts += family + "=" + family + fallback + ";";
+                  }
+                });
+
+                deferred.resolve({fonts: fonts, urls: urls});
+              },
+              inactive: function() {
+                deferred.reject("No google fonts were loaded");
+              },
+              fontinactive: function(familyName) {
+                inactiveFonts.push(familyName);
+              },
+              loading: function () {
+                deferred.notify("Loading google fonts");
               }
             });
-
-            deferred.resolve({fonts: fonts, urls: urls});
-          },
-          inactive: function() {
-            deferred.reject("No google fonts were loaded");
-          },
-          fontinactive: function(familyName) {
-            inactiveFonts.push(familyName);
-            $log.warn("Google font '" + familyName + "' failed to load");
-          },
-          loading: function () {
-            deferred.notify("Loading google fonts");
-          }
-        });
+          });
 
         return deferred.promise;
 
@@ -45,7 +57,7 @@ angular.module("risevision.widget.text.settings")
       factory.getFontsUsed = function(familyList) {
         var fontsUsed = [];
 
-        angular.forEach(GOOGLE_FONT_FAMILIES, function (family) {
+        angular.forEach(families, function (family) {
           if (familyList.indexOf(family) !== -1) {
             fontsUsed.push(family);
           }
