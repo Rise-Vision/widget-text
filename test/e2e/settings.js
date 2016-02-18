@@ -48,7 +48,7 @@
         it("should load all fonts", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
-          element.all(by.css("#mceu_32-body div")).then(function(elements) {
+          element.all(by.css("#mceu_33-body div")).then(function(elements) {
             expect(elements.length).to.equal(117);
           });
         });
@@ -56,7 +56,7 @@
         it("should show 'Add Custom Font' first", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
-          expect(element(by.css("#mceu_33-text")).getText()).to.eventually.equal("Add Custom Font");
+          expect(element(by.css("#mceu_34-text")).getText()).to.eventually.equal("Add Custom Font");
         });
 
         it("should show font family", function() {
@@ -155,7 +155,7 @@
         url = browser.findElement(by.model("url"));
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_33-text")).click();
+        element(by.css("#mceu_34-text")).click();
       });
 
       describe("Modal visibility", function() {
@@ -205,13 +205,71 @@
       });
     });
 
+    describe("Line Height", function () {
+
+      describe("Single line height by default", function() {
+
+        it("should set selection to Single", function() {
+          expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Single");
+        });
+
+        it("Should apply single spacing by default to editor", function(){
+          browser.driver.switchTo().frame(0);
+          browser.ignoreSynchronization = true;
+
+          element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+
+          browser.driver.switchTo().defaultContent();
+          browser.ignoreSynchronization = false;
+
+          // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
+          element(by.css(".mce-btn[aria-label='Source code']")).click();
+
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>");
+
+        });
+
+      });
+
+      describe("Change to double line height", function() {
+
+        it("should set Line Height to Double in tool", function() {
+          element(by.css(".mce-btn[aria-label='Line Height']")).click();
+          element(by.css("#mceu_35-text")).click();
+
+          expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Double");
+        });
+
+        it("should apply double line height to editor", function() {
+          element(by.css(".mce-btn[aria-label='Line Height']")).click();
+          element(by.css("#mceu_35-text")).click();
+
+          browser.driver.switchTo().frame(0);
+          browser.ignoreSynchronization = true;
+
+          element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+
+          browser.driver.switchTo().defaultContent();
+          browser.ignoreSynchronization = false;
+
+          // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
+          element(by.css(".mce-btn[aria-label='Source code']")).click();
+
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 2;\">This is a test</span></p>");
+
+        })
+
+      });
+
+    });
+
     describe("Saving", function() {
 
       it("Should correctly save settings", function() {
         var settings = {
           "params": {},
           "additionalParams": {
-            "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test</span></p>",
+            "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>",
             "customFonts": {
               "formats": "",
               "fonts": []
@@ -247,7 +305,7 @@
           settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
+              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}]
@@ -274,7 +332,7 @@
         url = browser.findElement(by.model("url"));
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_33-text")).click();
+        element(by.css("#mceu_34-text")).click();
 
         url.sendKeys(customFontUrl);
         element(by.css(".custom-font .select")).click();
@@ -300,7 +358,7 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: 'PT Sans', sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'PT Sans', sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
