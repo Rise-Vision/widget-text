@@ -10371,6 +10371,20 @@ angular.module("risevision.widget.text.settings")
           "bullist numlist indent outdent | " +
           "removeformat code",
           setup: function(editor) {
+            // add the Line Height list box
+            editor.addButton("lineheight", {
+              type: "listbox",
+              text: "Line Height",
+              icon: false,
+              values: [
+                {text:"Single", value: 1},
+                {text:"Double", value: 2}
+              ],
+              onselect: function () {
+                // TODO: call future function for applying line spacing to content editor
+              }
+            });
+
             editor.on("init", function() {
               // ensure custom fonts are added to frame with every editor init() call to account for editor refresh
               addCustomFontsToFrame(editor);
@@ -10382,6 +10396,16 @@ angular.module("risevision.widget.text.settings")
                 // force fontselect and fontsize tools to select defaults
                 editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
                 editor.execCommand("FontSize", false, "24px");
+
+                // TODO: register new stylings via formatter for applying line spacing
+
+                // add a custom command to editor for line height
+                editor.addCommand("LineHeight", function (/*value*/) {
+                  // TODO: call future function for applying line spacing to content editor
+                });
+
+                // execute LineHeight to force select single spacing as default
+                editor.execCommand("LineHeight", false, 1);
               }
               else {
                 // this happens when a custom font was loaded and a refresh of editor occurred
