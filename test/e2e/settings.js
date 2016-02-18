@@ -49,7 +49,7 @@
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
           element.all(by.css("#mceu_32-body div")).then(function(elements) {
-            expect(elements.length).to.equal(53);
+            expect(elements.length).to.equal(117);
           });
         });
 
@@ -300,12 +300,12 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: Domine, sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px;\">This is a test<span style=\"font-family: 'PT Sans', sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["Domine"],
+              "googleFonts": ["PT Sans"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
