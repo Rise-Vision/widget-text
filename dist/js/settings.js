@@ -10262,7 +10262,8 @@ angular.module("risevision.widget.text.settings")
       var _isLoading = true,
         _googleFonts = "",
         _googleFontUrls = [],
-        _customFontToSelect = "";
+        _customFontToSelect = "",
+        _lineHeightTool = null;
 
       // Handle toolbar interactions.
       function initCommands(editor, args) {
@@ -10350,6 +10351,44 @@ angular.module("risevision.widget.text.settings")
         return formats;
       }
 
+      function applyLineHeight(editor, value) {
+        editor.focus();
+        editor.formatter.toggle("lineHeight", {value: value});
+        editor.nodeChanged();
+      }
+
+      function updateLineHeight(editor) {
+        var value = null,
+          selectedNode,
+          selectedNodeParents;
+
+        selectedNode = editor.selection.getNode();
+
+        // only check <span> elements
+        if (!_isLoading && selectedNode.nodeName === "SPAN" && _lineHeightTool) {
+
+          value = editor.dom.getStyle(selectedNode, "line-height");
+
+          if (!value) {
+            // traverse up the nodes parents to find the root <span> node that does have line height applied
+            selectedNodeParents = editor.dom.getParents(selectedNode);
+
+            for (var i = 0; i < selectedNodeParents.length; i += 1) {
+              if (selectedNodeParents[i].nodeName === "SPAN" && editor.dom.getStyle(selectedNodeParents[i], "line-height")) {
+                value = editor.dom.getStyle(selectedNodeParents[i], "line-height");
+                break;
+              }
+            }
+          }
+
+          if (value) {
+            // update line height tool selection
+            _lineHeightTool.value(value.toString());
+          }
+
+        }
+      }
+
       // Initialize TinyMCE.
       function initTinyMCE() {
         $scope.tinymceOptions = {
@@ -10357,7 +10396,8 @@ angular.module("risevision.widget.text.settings")
           skin_url: "//s3.amazonaws.com/rise-common/styles/tinymce/rise",
           font_formats: "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts,
           formats: {
-            fontsize: { inline: "span", split: false, styles: { fontSize: "%value" } }
+            fontsize: { inline: "span", split: false, styles: { fontSize: "%value" } },
+            paragraph: { block : "p", styles : {margin : "0", padding: "0"} }
           },
           content_css: _googleFontUrls,
           style_formats_merge: true,
@@ -10368,20 +10408,25 @@ angular.module("risevision.widget.text.settings")
           "forecolor backcolor | " +
           "bold italic underline | " +
           "alignleft aligncenter alignright alignjustify | " +
-          "bullist numlist indent outdent | " +
+          "bullist numlist indent outdent lineheight | " +
           "removeformat code",
           setup: function(editor) {
             // add the Line Height list box
             editor.addButton("lineheight", {
               type: "listbox",
               text: "Line Height",
+              title: "Line Height",
               icon: false,
               values: [
-                {text:"Single", value: 1},
-                {text:"Double", value: 2}
+                {text:"Single", value: "1"},
+                {text:"Double", value: "2"}
               ],
               onselect: function () {
-                // TODO: call future function for applying line spacing to content editor
+                applyLineHeight(editor, this.value());
+              },
+              onPostRender: function () {
+                // save a reference to the custom line height listbox
+                _lineHeightTool = this;
               }
             });
 
@@ -10397,15 +10442,19 @@ angular.module("risevision.widget.text.settings")
                 editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
                 editor.execCommand("FontSize", false, "24px");
 
-                // TODO: register new stylings via formatter for applying line spacing
+                // Applying no margin or padding for all paragraphs
+                editor.formatter.apply("paragraph");
 
-                // add a custom command to editor for line height
-                editor.addCommand("LineHeight", function (/*value*/) {
-                  // TODO: call future function for applying line spacing to content editor
-                });
+                // Register applying line-height styling on all <span> elements
+                editor.formatter.register("lineHeight", {inline : "span", styles : {lineHeight : "%value"}});
 
-                // execute LineHeight to force select single spacing as default
-                editor.execCommand("LineHeight", false, 1);
+                // force line height selection to not just default on Single, but display Single in tool text
+                // need to first change selection, then change back
+                _lineHeightTool.value("2");
+                _lineHeightTool.value("1");
+
+                // force editor to apply single spacing as default
+                applyLineHeight(editor, "1");
               }
               else {
                 // this happens when a custom font was loaded and a refresh of editor occurred
@@ -10427,6 +10476,13 @@ angular.module("risevision.widget.text.settings")
             editor.on("ExecCommand", function(args) {
               initCommands(editor, args);
             });
+
+            editor.on("NodeChange", function() {
+              // NodeChange fires when the selection is moved to a new location or the DOM is updated by some command
+              // Update which selection shows in line height tool
+              updateLineHeight(editor);
+            });
+
           },
           init_instance_callback: function(editor) {
             var oldApply = editor.formatter.apply,
