@@ -29,7 +29,7 @@
       "!./src/components/**/*"
     ],
     vendorFiles = [
-      "./src/components/jquery/dist/**/*",
+      "./src/components/jquery/dist/jquery.min.js",
       "./src/components/gsap/src/minified/TweenLite.min.js",
       "./src/components/gsap/src/minified/plugins/CSSPlugin.min.js",
       "./src/components/gsap/src/minified/utils/Draggable.min.js",
@@ -129,7 +129,10 @@
   gulp.task("webdriver_update", factory.webdriveUpdate());
 
   // ***** e2e Testing ***** //
- gulp.task("html:e2e:settings", factory.htmlE2E());
+  gulp.task("html:e2e:settings", factory.htmlE2E({
+    files: "./src/settings.html",
+    e2eFontLoader: "../node_modules/widget-tester/mocks/web-font-loader-mock.js"
+  }));
 
   gulp.task("e2e:server:settings", ["config", "html:e2e:settings"], factory.testServer());
 
