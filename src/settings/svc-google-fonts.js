@@ -10,16 +10,25 @@ angular.module("risevision.widget.text.settings")
 
       /* Get the specified Google fonts. */
       factory.getFonts = function(families) {
+        var deferred = $q.defer();
+
         // Only load those fonts that have not already been loaded.
         families = families.filter(function(family) {
           return loadedFamilies.indexOf(family) === -1;
         });
 
-        return loadFonts(families).then(function(data) {
-          loadedFamilies.push.apply(loadedFamilies, families);
+        if (families.length > 0) {
+          return loadFonts(families).then(function(data) {
+            loadedFamilies.push.apply(loadedFamilies, families);
 
-          return data;
-        });
+            return data;
+          });
+        }
+        else {
+          deferred.resolve(null);
+
+          return deferred.promise;
+        }
       };
 
       /* Get the next set of Google fonts. */
