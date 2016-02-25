@@ -49,7 +49,7 @@
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
           element.all(by.css("#mceu_33-body div")).then(function(elements) {
-            expect(elements.length).to.equal(117);
+            expect(elements.length).to.equal(118);
           });
         });
 
@@ -57,6 +57,12 @@
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
           expect(element(by.css("#mceu_34-text")).getText()).to.eventually.equal("Add Custom Font");
+        });
+
+        it("should show 'Load More Fonts...' last", function() {
+          element(by.css(".mce-btn[aria-label='Font Family']")).click();
+
+          expect(element(by.css("#mceu_151-text")).getText()).to.eventually.equal("Load More Fonts...");
         });
 
         it("should show font family", function() {
@@ -260,7 +266,27 @@
         })
 
       });
+    });
 
+    describe("Google Font", function() {
+      beforeEach(function () {
+        element(by.css(".mce-btn[aria-label='Font Family']")).click();
+        element(by.css("#mceu_151-text")).click();
+      });
+
+      it("should load additional fonts when 'Load More Fonts...' is clicked", function() {
+        element(by.css(".mce-btn[aria-label='Font Family']")).click();
+
+        element.all(by.css("#mceu_185-body div")).then(function(elements) {
+          expect(elements.length).to.equal(120);
+        });
+      });
+
+      it("should remove 'Load More Fonts...' from the dropdown", function() {
+        element(by.css(".mce-btn[aria-label='Font Family']")).click();
+
+        expect(element(by.css("#mceu_185-body div:last-child .mce-text")).getText()).to.not.eventually.equal("Load More Fonts...");
+      });
     });
 
     describe("Saving", function() {
@@ -358,12 +384,12 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: Lora, sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'PT Sans', sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["Lora"],
+              "googleFonts": ["PT Sans"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",

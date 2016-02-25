@@ -10277,78 +10277,20 @@ angular.module("risevision.widget.text.settings")
 
               return;
             }
-            break;
+            // Load More Fonts...
+            else if (args.value === "more") {
+              googleFonts.getMoreFonts().then(function(data) {
+                _googleFonts += data.fonts;
+                _googleFontUrls.push.apply(_googleFontUrls, data.urls);
 
+                $scope.tinymceOptions.font_formats = getFontFormats(data.moreFonts);
+              });
+            }
+
+            break;
           default:
             break;
         }
-      }
-
-      // Initialize TinyMCE toolbar.
-      function addCustomFontsToFrame(editor) {
-        var doc = editor.getDoc();
-
-        if ($scope.settings.additionalParams.customFonts.fonts.length > 0) {
-          $timeout(function getSheet() {
-            var sheet = doc.styleSheets[0];
-
-            if (sheet) {
-              angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
-                var rule = "font-family: " + font.family.replace(/'/g, "") + "; " +
-                  "src: url('" + font.url.replace(/'/g, "\\'") + "');";
-
-                // load font
-                sheet.addRule("@font-face", rule);
-              });
-            }
-            else {
-              getSheet();
-            }
-          }, 200);
-        }
-
-      }
-
-      function addCustomFontsToDocument(fonts, cb) {
-
-        function complete() {
-          if (cb && typeof cb === "function") {
-            cb();
-          }
-        }
-
-        if (Array.isArray(fonts) && fonts.length > 0) {
-          $timeout(function getSheet() {
-            var sheet = document.styleSheets[0];
-
-            if (sheet) {
-              angular.forEach(fonts, function (font) {
-                var rule = "font-family: " + font.family.replace(/'/g, "").toLowerCase() + "; " +
-                  "src: url('" + font.url.replace(/'/g, "\\'") + "');";
-
-                // load font
-                sheet.addRule("@font-face", rule);
-              });
-            }
-            else {
-              getSheet();
-            }
-          }, 200);
-        }
-        else {
-          complete();
-        }
-
-      }
-
-      function getCustomFontFormats() {
-        var formats = "";
-
-        angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
-          formats += font.family + "=" + font.family.replace(/'/g, "").toLowerCase() + ",sans-serif;";
-        });
-
-        return formats;
       }
 
       function applyLineHeight(editor, value) {
@@ -10394,10 +10336,11 @@ angular.module("risevision.widget.text.settings")
         $scope.tinymceOptions = {
           plugins: "code colorpicker textcolor wordcount",
           skin_url: "//s3.amazonaws.com/rise-common/styles/tinymce/rise",
-          font_formats: "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts,
+          font_formats: getFontFormats(),
           formats: {
             fontsize: { inline: "span", split: false, styles: { fontSize: "%value" } },
-            paragraph: { block : "p", styles : {margin : "0", padding: "0"} }
+            lineHeight: { inline: "span", styles: { lineHeight: "%value" } },
+            paragraph: { block: "p", styles: { margin: "0", padding: "0" } }
           },
           content_css: _googleFontUrls,
           style_formats_merge: true,
@@ -10437,6 +10380,19 @@ angular.module("risevision.widget.text.settings")
               if (_isLoading) {
                 // only call this when initially loading, it loads all previously saved custom fonts
                 addCustomFontsToDocument($scope.settings.additionalParams.customFonts.fonts);
+
+                // Load those Google fonts that are being used in the content but have not yet been
+                // added to the dropdown.
+                if ($scope.settings.additionalParams.googleFonts.length > 0) {
+                  googleFonts.getFonts($scope.settings.additionalParams.googleFonts).then(function(data) {
+                    if (data !== null) {
+                      _googleFonts += data.fonts;
+                      _googleFontUrls.push.apply(_googleFontUrls, data.urls);
+
+                      $scope.tinymceOptions.font_formats = getFontFormats();
+                    }
+                  });
+                }
 
                 // force fontselect and fontsize tools to select defaults
                 editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
@@ -10512,6 +10468,86 @@ angular.module("risevision.widget.text.settings")
         };
       }
 
+      // Initialize TinyMCE toolbar.
+      function addCustomFontsToFrame(editor) {
+        var doc = editor.getDoc();
+
+        if ($scope.settings.additionalParams.customFonts.fonts.length > 0) {
+          $timeout(function getSheet() {
+            var sheet = doc.styleSheets[0];
+
+            if (sheet) {
+              angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
+                var rule = "font-family: " + font.family.replace(/'/g, "") + "; " +
+                  "src: url('" + font.url.replace(/'/g, "\\'") + "');";
+
+                // load font
+                sheet.addRule("@font-face", rule);
+              });
+            }
+            else {
+              getSheet();
+            }
+          }, 200);
+        }
+
+      }
+
+      function addCustomFontsToDocument(fonts, cb) {
+
+        function complete() {
+          if (cb && typeof cb === "function") {
+            cb();
+          }
+        }
+
+        if (Array.isArray(fonts) && fonts.length > 0) {
+          $timeout(function getSheet() {
+            var sheet = document.styleSheets[0];
+
+            if (sheet) {
+              angular.forEach(fonts, function (font) {
+                var rule = "font-family: " + font.family.replace(/'/g, "").toLowerCase() + "; " +
+                  "src: url('" + font.url.replace(/'/g, "\\'") + "');";
+
+                // load font
+                sheet.addRule("@font-face", rule);
+              });
+            }
+            else {
+              getSheet();
+            }
+          }, 200);
+        }
+        else {
+          complete();
+        }
+
+      }
+
+      function getCustomFontFormats() {
+        var formats = "";
+
+        angular.forEach($scope.settings.additionalParams.customFonts.fonts, function (font) {
+          formats += font.family + "=" + font.family.replace(/'/g, "").toLowerCase() + ",sans-serif;";
+        });
+
+        return formats;
+      }
+
+      function getFontFormats(showLoadMore) {
+        var formats = "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts;
+
+        showLoadMore = showLoadMore !== false;
+
+        if (showLoadMore) {
+          return formats + "Load More Fonts...=more;";
+        }
+        else {
+          return formats;
+        }
+      }
+
       $scope.processFonts = function () {
         var wrapper = document.createElement("div"),
           families = "",
@@ -10553,14 +10589,14 @@ angular.module("risevision.widget.text.settings")
           if (_isLoading) {
 
             // Load Google fonts.
-            googleFonts.getFonts().then(function(data) {
+            googleFonts.getMoreFonts().then(function(data) {
+              if (data !== null) {
+                _googleFonts = data.fonts;
+                _googleFontUrls = data.urls;
 
-              _googleFonts = data.fonts;
-              _googleFontUrls = data.urls;
-
-              // kick off initialization now that customFonts.fonts has a value and google fonts have been loaded
-              initTinyMCE();
-
+                // kick off initialization now that customFonts.fonts has a value and google fonts have been loaded
+                initTinyMCE();
+              }
             }, function (error) {
               $log.warn(error);
               // kick off initialization now that customFonts.fonts has a value, disregard no google fonts
@@ -10580,7 +10616,7 @@ angular.module("risevision.widget.text.settings")
         $scope.settings.additionalParams.customFonts.fonts.push(data);
 
         // update value of font_formats
-        $scope.tinymceOptions.font_formats = "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts;
+        $scope.tinymceOptions.font_formats = getFontFormats();
       });
 
     }])
@@ -10668,69 +10704,141 @@ angular.module("risevision.widget.text.settings")
     function($log, $q, $window, googleFontLoader) {
 
       var fallback = ",sans-serif",
-        fonts = "",
-        urls = [],
-        families = [],
         factory = {},
+        allFonts = [],
+        loadedFamilies = [],
         inactiveFonts = [];
 
-      factory.getFonts = function() {
-        var deferred = $q.defer(),
-          totalFonts = 100;
+      /* Get the specified Google fonts. */
+      factory.getFonts = function(families) {
+        var deferred = $q.defer();
 
-        families = [];
+        // Only load those fonts that have not already been loaded.
+        families = families.filter(function(family) {
+          return loadedFamilies.indexOf(family) === -1;
+        });
 
-        googleFontLoader.getPopularFonts()
-          .then(function(resp) {
-            if (resp.data && resp.data.items) {
-              for (var i = 0; i < totalFonts; i++) {
-                families.push(resp.data.items[i].family);
-              }
-            }
+        if (families.length > 0) {
+          return loadFonts(families).then(function(data) {
+            loadedFamilies.push.apply(loadedFamilies, families);
 
-            $window.WebFont.load({
-              google: {
-                families: families
-              },
-              timeout: 2000,
-              active: function() {
-                angular.forEach(families, function (family) {
-                  if (inactiveFonts.indexOf(family) === -1) {
-                    urls.push("//fonts.googleapis.com/css?family=" + family);
-                    fonts += family + "=" + family + fallback + ";";
-                  }
-                });
-
-                deferred.resolve({fonts: fonts, urls: urls});
-              },
-              inactive: function() {
-                deferred.reject("No google fonts were loaded");
-              },
-              fontinactive: function(familyName) {
-                inactiveFonts.push(familyName);
-              },
-              loading: function () {
-                deferred.notify("Loading google fonts");
-              }
-            });
+            return data;
           });
+        }
+        else {
+          deferred.resolve(null);
 
-        return deferred.promise;
+          return deferred.promise;
+        }
+      };
 
+      /* Get the next set of Google fonts. */
+      factory.getMoreFonts = function() {
+        if (allFonts.length === 0) {
+          return getPopularFonts().then(function() {
+            return getMoreFonts();
+          });
+        }
+        else {
+          return getMoreFonts();
+        }
       };
 
       factory.getFontsUsed = function(familyList) {
         var fontsUsed = [];
 
-        angular.forEach(families, function (family) {
+        angular.forEach(loadedFamilies, function (family) {
           if (familyList.indexOf(family) !== -1) {
             fontsUsed.push(family);
           }
         });
 
         return fontsUsed;
-
       };
+
+      /* Get the names of all Google fonts sorted by popularity. */
+      function getPopularFonts() {
+        var deferred = $q.defer();
+
+        googleFontLoader.getPopularFonts()
+          .then(function(resp) {
+            if (resp.data && resp.data.items) {
+              // Save all Google fonts.
+              for (var i = 0, length = resp.data.items.length; i < length; i++) {
+                allFonts.push(resp.data.items[i].family);
+              }
+            }
+
+            deferred.resolve();
+          });
+
+        return deferred.promise;
+      }
+
+      /* Get the next set of Google fonts. */
+      function getMoreFonts() {
+        var totalFonts = 100,
+          familiesToLoad = [];
+
+        // Get the next set of families to load.
+        familiesToLoad = allFonts.splice(0, totalFonts);
+
+        // Only load those fonts that have not already been loaded.
+        familiesToLoad = familiesToLoad.filter(function(family) {
+          return loadedFamilies.indexOf(family) === -1;
+        });
+
+        // Keep track of the loaded families.
+        loadedFamilies.push.apply(loadedFamilies, familiesToLoad);
+
+        if (familiesToLoad.length > 0) {
+          return loadFonts(familiesToLoad).then(function(data) {
+            if (allFonts.length > 0) {
+              data.moreFonts = true;
+            }
+            else {
+              data.moreFonts = false;
+            }
+
+            return data;
+          });
+        }
+      }
+
+      /* Load the specified Google fonts. */
+      function loadFonts(families) {
+        var deferred = $q.defer(),
+          urls = [],
+          fonts = "";
+
+        $window.WebFont.load({
+          google: {
+            families: families
+          },
+          timeout: 2000,
+          active: function() {
+            angular.forEach(families, function (family) {
+              if (inactiveFonts.indexOf(family) === -1) {
+                urls.push("//fonts.googleapis.com/css?family=" + family);
+                fonts += family + "=" + family + fallback + ";";
+              }
+            });
+
+            deferred.resolve({fonts: fonts, urls: urls});
+          },
+          inactive: function() {
+            deferred.reject("No google fonts were loaded");
+          },
+          fontinactive: function(familyName) {
+            inactiveFonts.push(familyName);
+          },
+          loading: function () {
+            deferred.notify("Loading google fonts");
+          }
+        });
+
+        return deferred.promise;
+      }
 
       return factory;
   }]);

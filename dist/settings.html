@@ -63,8 +63,9 @@
         <form role="form" name="settingsForm">
           <div class="modal-body">
             <scroll-setting scroll="settings.additionalParams.scroll"></scroll-setting>
-
-            <textarea ui-tinymce="tinymceOptions" ng-model="settings.additionalParams.data" ng-if="tinymceOptions"></textarea>
+            <div ng-if="tinymceOptions">
+              <textarea ui-tinymce="tinymceOptions" ng-model="settings.additionalParams.data"></textarea>
+            </div>
           </div><!-- .modal-body -->
 
           <hr>
@@ -130,6 +131,9 @@
   </script>
 
   <script src="js/settings.min.js"></script>
+
+  <!-- build:e2eFontLoader -->
+  
 
   <!-- build:e2egadgets -->
   <script src="//rvashow2.appspot.com/gadgets/gadgets.min.js"></script>

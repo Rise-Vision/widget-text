@@ -65,8 +65,9 @@
         <form role="form" name="settingsForm">
           <div class="modal-body">
             <scroll-setting scroll="settings.additionalParams.scroll"></scroll-setting>
-
-            <textarea ui-tinymce="tinymceOptions" ng-model="settings.additionalParams.data" ng-if="tinymceOptions"></textarea>
+            <div ng-if="tinymceOptions">
+              <textarea ui-tinymce="tinymceOptions" ng-model="settings.additionalParams.data"></textarea>
+            </div>
           </div><!-- .modal-body -->
 
           <hr>
@@ -159,6 +160,9 @@
   <script src="settings/dtv-custom-font.js"></script>
   <script src="settings/cst-font-settings.js"></script>
   <script src="settings/svc-google-fonts.js"></script>
+  <!-- endbuild -->
+
+  <!-- build:e2eFontLoader -->
   <!-- endbuild -->
 
   <!-- build:e2egadgets -->
