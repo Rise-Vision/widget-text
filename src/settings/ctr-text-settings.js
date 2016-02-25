@@ -82,7 +82,8 @@ angular.module("risevision.widget.text.settings")
           font_formats: getFontFormats(),
           formats: {
             fontsize: { inline: "span", split: false, styles: { fontSize: "%value" } },
-            paragraph: { block : "p", styles : {margin : "0", padding: "0"} }
+            lineHeight: { inline: "span", styles: {lineHeight: "%value"} },
+            paragraph: { block: "p", styles: {margin: "0", padding: "0"} }
           },
           content_css: _googleFontUrls,
           style_formats_merge: true,
