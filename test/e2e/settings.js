@@ -384,12 +384,12 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'PT Sans', sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'Slabo 27px', sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["PT Sans"],
+              "googleFonts": ["Slabo 27px"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
@@ -408,7 +408,7 @@
         browser.ignoreSynchronization = false;
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_61-text")).click();
+        element(by.css("#mceu_53-text")).click();
 
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;

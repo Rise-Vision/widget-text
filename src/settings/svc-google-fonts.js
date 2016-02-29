@@ -117,9 +117,24 @@ angular.module("risevision.widget.text.settings")
           timeout: 2000,
           active: function() {
             angular.forEach(families, function (family) {
+              var spaces = false;
+
               if (inactiveFonts.indexOf(family) === -1) {
                 urls.push("//fonts.googleapis.com/css?family=" + family);
-                fonts += family + "=" + family + fallback + ";";
+
+                // check for spaces in family name
+                if (/\s/.test(family)) {
+                  spaces = true;
+                }
+
+                if (spaces) {
+                  // wrap family name in single quotes
+                  fonts += family + "='" + family + "'" + fallback + ";";
+                }
+                else {
+                  fonts += family + "=" + family + fallback + ";";
+                }
+
               }
             });
 
