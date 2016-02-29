@@ -1,6 +1,6 @@
 angular.module("risevision.widget.text.settings")
-  .controller("textSettingsController", ["$scope", "$rootScope", "$log", "$window", "$timeout", "googleFonts", "FONT_SIZES", "FONT_FAMILIES",
-    function ($scope, $rootScope, $log, $window, $timeout, googleFonts, FONT_SIZES, FONT_FAMILIES) {
+  .controller("textSettingsController", ["$scope", "$rootScope", "$log", "$window", "$timeout", "googleFontLoader", "FONT_SIZES", "FONT_FAMILIES",
+    function ($scope, $rootScope, $log, $window, $timeout, googleFontLoader, FONT_SIZES, FONT_FAMILIES) {
 
       var _isLoading = true,
         _googleFonts = "",
@@ -19,15 +19,6 @@ angular.module("risevision.widget.text.settings")
               $rootScope.$broadcast("showCustom");
 
               return;
-            }
-            // Load More Fonts...
-            else if (args.value === "more") {
-              googleFonts.getMoreFonts().then(function(data) {
-                _googleFonts += data.fonts;
-                _googleFontUrls.push.apply(_googleFontUrls, data.urls);
-
-                $scope.tinymceOptions.font_formats = getFontFormats(data.moreFonts);
-              });
             }
 
             break;
@@ -123,19 +114,6 @@ angular.module("risevision.widget.text.settings")
               if (_isLoading) {
                 // only call this when initially loading, it loads all previously saved custom fonts
                 addCustomFontsToDocument($scope.settings.additionalParams.customFonts.fonts);
-
-                // Load those Google fonts that are being used in the content but have not yet been
-                // added to the dropdown.
-                if ($scope.settings.additionalParams.googleFonts.length > 0) {
-                  googleFonts.getFonts($scope.settings.additionalParams.googleFonts).then(function(data) {
-                    if (data !== null) {
-                      _googleFonts += data.fonts;
-                      _googleFontUrls.push.apply(_googleFontUrls, data.urls);
-
-                      $scope.tinymceOptions.font_formats = getFontFormats();
-                    }
-                  });
-                }
 
                 // force fontselect and fontsize tools to select defaults
                 editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
@@ -278,17 +256,8 @@ angular.module("risevision.widget.text.settings")
         return formats;
       }
 
-      function getFontFormats(showLoadMore) {
-        var formats = "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts;
-
-        showLoadMore = showLoadMore !== false;
-
-        if (showLoadMore) {
-          return formats + "Load More Fonts...=more;";
-        }
-        else {
-          return formats;
-        }
+      function getFontFormats() {
+        return "Add Custom Font=custom;" + getCustomFontFormats() + FONT_FAMILIES + _googleFonts;
       }
 
       $scope.processFonts = function () {
@@ -312,7 +281,7 @@ angular.module("risevision.widget.text.settings")
         });
 
         // save which google fonts were used
-        $scope.settings.additionalParams.googleFonts = googleFonts.getFontsUsed(families);
+        $scope.settings.additionalParams.googleFonts = googleFontLoader.getFontsUsed(families);
 
         // proceed with saving settings
         $scope.$parent.saveSettings();
@@ -332,7 +301,7 @@ angular.module("risevision.widget.text.settings")
           if (_isLoading) {
 
             // Load Google fonts.
-            googleFonts.getMoreFonts().then(function(data) {
+            googleFontLoader.getGoogleFonts().then(function(data) {
               if (data !== null) {
                 _googleFonts = data.fonts;
                 _googleFontUrls = data.urls;
@@ -344,8 +313,6 @@ angular.module("risevision.widget.text.settings")
               $log.warn(error);
               // kick off initialization now that customFonts.fonts has a value, disregard no google fonts
               initTinyMCE();
-            }, function (update) {
-              $log.debug(update);
             });
           }
         }
