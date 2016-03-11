@@ -225,7 +225,7 @@
           // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
           element(by.css(".mce-btn[aria-label='Source code']")).click();
 
-          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>");
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>");
 
         });
 
@@ -255,7 +255,7 @@
           // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
           element(by.css(".mce-btn[aria-label='Source code']")).click();
 
-          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 2;\">This is a test</span></p>");
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 2;\">This is a test</span></p>");
 
         })
 
@@ -268,7 +268,7 @@
         var settings = {
           "params": {},
           "additionalParams": {
-            "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>",
+            "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>",
             "customFonts": {
               "formats": "",
               "fonts": []
@@ -304,7 +304,7 @@
           settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}]
@@ -357,7 +357,7 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px; padding: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: Abel, sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: Abel, sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
