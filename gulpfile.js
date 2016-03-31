@@ -3,6 +3,7 @@
 (function () {
   "use strict";
 
+  var bower = require("gulp-bower");
   var bump = require("gulp-bump");
   var del = require("del");
   var env = process.env.NODE_ENV || "prod";
@@ -122,8 +123,15 @@
       .pipe(gulp.dest("dist/js/vendor"));
   });
 
+  gulp.task("bower-update", function (cb) {
+    return bower({ cmd: "update"}).on("error", function(err) {
+      console.log(err);
+      cb();
+    });
+  });
+
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["source", "fonts", "i18n", "vendor"], ["unminify"], cb);
+    runSequence(["clean", "config", "bower-update"], ["source", "fonts", "i18n", "vendor"], ["unminify"], cb);
   });
 
   gulp.task("webdriver_update", factory.webdriveUpdate());
