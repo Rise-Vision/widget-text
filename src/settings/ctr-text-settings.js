@@ -1,3 +1,5 @@
+/* global gadgets */
+
 angular.module("risevision.widget.text.settings")
   .controller("textSettingsController", ["$scope", "$rootScope", "$log", "$window", "$timeout", "googleFontLoader", "FONT_SIZES", "FONT_FAMILIES",
     function ($scope, $rootScope, $log, $window, $timeout, googleFontLoader, FONT_SIZES, FONT_FAMILIES) {
@@ -6,7 +8,8 @@ angular.module("risevision.widget.text.settings")
         _googleFonts = "",
         _googleFontUrls = [],
         _customFontToSelect = "",
-        _lineHeightTool = null;
+        _lineHeightTool = null,
+        _prefs = new gadgets.Prefs();
 
       // Handle toolbar interactions.
       function initCommands(editor, args) {
@@ -82,11 +85,11 @@ angular.module("risevision.widget.text.settings")
           min_height: 175,
           menubar: false,
           toolbar1: "fontselect fontsizeselect | " +
-          "forecolor backcolor | " +
-          "bold italic underline | " +
-          "alignleft aligncenter alignright alignjustify | " +
-          "bullist numlist indent outdent lineheight | " +
-          "removeformat code",
+            "forecolor backcolor | " +
+            "bold italic underline | " +
+            "alignleft aligncenter alignright alignjustify | " +
+            "bullist numlist indent outdent lineheight | " +
+            "removeformat code",
           setup: function(editor) {
             // add the Line Height list box
             editor.addButton("lineheight", {
@@ -108,6 +111,9 @@ angular.module("risevision.widget.text.settings")
             });
 
             editor.on("init", function() {
+              // Set width of editable area to be the same as that of the Placeholder.
+              document.querySelector(".mce-edit-area iframe").style.width = _prefs.getInt("rsW") + "px";
+
               // ensure custom fonts are added to frame with every editor init() call to account for editor refresh
               addCustomFontsToFrame(editor);
 
