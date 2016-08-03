@@ -32,6 +32,10 @@
 
     describe("Initialization", function() {
 
+      it("Should set width of editable area to equal Placeholder width", function() {
+        expect(element(by.css(".mce-edit-area iframe")).getCssValue("width")).to.eventually.equal("1014px");
+      });
+
       describe("Scroll Setting", function () {
         it("Should load scroll component", function () {
           expect(element(by.id("scroll-by")).isPresent())

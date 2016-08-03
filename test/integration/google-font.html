@@ -35,7 +35,9 @@
       test("should load Google fonts", function() {
         // polyserve testing in browser, change to below
         // assert.equal(document.styleSheets[2].href, "http://fonts.googleapis.com/css?family=Bitter%7CSource+Sans+Pro");
-        assert.equal(document.styleSheets[1].href, "http://fonts.googleapis.com/css?family=Bitter%7CSource+Sans+Pro");
+        setTimeout(function() {
+          assert.equal(document.styleSheets[1].href, "http://fonts.googleapis.com/css?family=Bitter%7CSource+Sans+Pro");
+        }, 1);
       });
     });
   </script>
