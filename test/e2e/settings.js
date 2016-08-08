@@ -33,7 +33,13 @@
     describe("Initialization", function() {
 
       it("Should set width of editable area to equal Placeholder width", function() {
-        expect(element(by.css(".mce-edit-area iframe")).getCssValue("width")).to.eventually.equal("1014px");
+        browser.driver.switchTo().frame(0);
+        browser.ignoreSynchronization = true;
+
+        expect(element(by.css(".mce-content-body")).getCssValue("width")).to.eventually.equal("1014px");
+
+        browser.driver.switchTo().defaultContent();
+        browser.ignoreSynchronization = false;
       });
 
       describe("Scroll Setting", function () {
