@@ -112,7 +112,15 @@ angular.module("risevision.widget.text.settings")
 
             editor.on("init", function() {
               // Set width of editable area to be the same as that of the Placeholder.
-              document.querySelector(".mce-edit-area iframe").style.width = _prefs.getInt("rsW") + "px";
+              var mceContainerDivWidth = document.querySelector(".mce-container-body").offsetWidth;
+              var placeholderWidth = _prefs.getInt("rsW");
+
+              if (placeholderWidth > mceContainerDivWidth) {
+                document.querySelector(".mce-edit-area iframe").contentDocument.body.style.width = placeholderWidth + "px";
+              } else {
+                document.querySelector(".mce-edit-area iframe").style.width = placeholderWidth + "px";
+              }
+
 
               // ensure custom fonts are added to frame with every editor init() call to account for editor refresh
               addCustomFontsToFrame(editor);
