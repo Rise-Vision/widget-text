@@ -14,8 +14,6 @@ angular.module("risevision.widget.text.settings")
     "Terminal=terminal,monaco,monospace;" +
     "Times New Roman=times new roman,times,serif;" +
     "Trebuchet MS=trebuchet ms,geneva,sans-serif;" +
-    "Verdana=verdana,geneva,sans-serif;" +
-    "Webdings=webdings;" +
-    "Wingdings=wingdings,zapf dingbats;")
+    "Verdana=verdana,geneva,sans-serif;")
   .constant("FONT_SIZES",
     "8px 9px 10px 11px 12px 14px 18px 24px 30px 36px 48px 60px 72px 96px");

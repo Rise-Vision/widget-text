@@ -59,7 +59,7 @@
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
           element.all(by.css("#mceu_33-body div")).then(function(elements) {
-            expect(elements.length).to.equal(23);
+            expect(elements.length).to.equal(21);
           });
         });
 
@@ -391,7 +391,7 @@
         browser.ignoreSynchronization = false;
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_53-text")).click();
+        element(by.css("#mceu_51-text")).click();
 
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
