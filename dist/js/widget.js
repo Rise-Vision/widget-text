@@ -256,14 +256,16 @@
 	};
 })(jQuery, window, document);
 
+/* exported WIDGET_COMMON_CONFIG */
 var WIDGET_COMMON_CONFIG = {
   AUTH_PATH_URL: "v1/widget/auth",
   LOGGER_CLIENT_ID: "1088527147109-6q1o2vtihn34292pjt4ckhmhck0rk0o7.apps.googleusercontent.com",
   LOGGER_CLIENT_SECRET: "nlZyrcPLg6oEwO9f9Wfn29Wh",
   LOGGER_REFRESH_TOKEN: "1/xzt4kwzE1H7W9VnKB8cAaCx6zb4Es4nKEoqaYHdTD15IgOrJDtdun6zK6XiATCKT",
-  STORAGE_ENV: "prod",
   STORE_URL: "https://store-dot-rvaserver2.appspot.com/"
 };
+/* global WebFont */
+
 var RiseVision = RiseVision || {};
 
 RiseVision.Common = RiseVision.Common || {};
@@ -271,13 +273,13 @@ RiseVision.Common = RiseVision.Common || {};
 RiseVision.Common.Utilities = (function() {
 
   function getFontCssStyle(className, fontObj) {
-    var family = "font-family:" + fontObj.font.family + "; ";
+    var family = "font-family: " + decodeURIComponent(fontObj.font.family).replace(/'/g, "") + "; ";
     var color = "color: " + (fontObj.color ? fontObj.color : fontObj.forecolor) + "; ";
     var size = "font-size: " + (fontObj.size.indexOf("px") === -1 ? fontObj.size + "px; " : fontObj.size + "; ");
     var weight = "font-weight: " + (fontObj.bold ? "bold" : "normal") + "; ";
     var italic = "font-style: " + (fontObj.italic ? "italic" : "normal") + "; ";
     var underline = "text-decoration: " + (fontObj.underline ? "underline" : "none") + "; ";
-    var highlight = "background-color: " + (fontObj.highlightColor ? fontObj.highlightColor : fontObj.backcolor) + "; ";
+    var highlight = "background-color: " + (fontObj.highlightColor ? fontObj.highlightColor : fontObj.backcolor) + ";";
 
     return "." + className + " {" + family + color + size + weight + italic + underline + highlight + "}";
   }
@@ -319,23 +321,75 @@ RiseVision.Common.Utilities = (function() {
    *           object   contentDoc    Document object into which to inject styles
    *                                  and load fonts (optional).
    */
-  function loadFonts(settings, contentDoc) {
-    settings.forEach(function(item) {
-      if (item.class && item.fontSetting) {
-        addCSSRules([ getFontCssStyle(item.class, item.fontSetting) ]);
-      }
+  function loadFonts(settings, cb) {
+    var families = null,
+      googleFamilies = [],
+      customFamilies = [],
+      customUrls = [];
 
-      if (item.fontSetting.font.type) {
-        if (item.fontSetting.font.type === "custom" && item.fontSetting.font.family &&
-          item.fontSetting.font.url) {
-          loadCustomFont(item.fontSetting.font.family, item.fontSetting.font.url,
-            contentDoc);
-        }
-        else if (item.fontSetting.font.type === "google" && item.fontSetting.font.family) {
-          loadGoogleFont(item.fontSetting.font.family, contentDoc);
-        }
+    function callback() {
+      if (cb && typeof cb === "function") {
+        cb();
+      }
+    }
+
+    function onGoogleFontsLoaded() {
+      callback();
+    }
+
+    if (!settings || settings.length === 0) {
+      callback();
+      return;
+    }
+
+    // Check for custom css class names and add rules if so
+    settings.forEach(function(item) {
+      if (item.class && item.fontStyle) {
+        addCSSRules([ getFontCssStyle(item.class, item.fontStyle) ]);
       }
     });
+
+    // Google fonts
+    for (var i = 0; i < settings.length; i++) {
+      if (settings[i].fontStyle && settings[i].fontStyle.font.type &&
+        (settings[i].fontStyle.font.type === "google")) {
+        // Remove fallback font.
+        families = settings[i].fontStyle.font.family.split(",")[0];
+
+        // strip possible single quotes
+        families = families.replace(/'/g, "");
+
+        googleFamilies.push(families);
+      }
+    }
+
+    // Custom fonts
+    for (i = 0; i < settings.length; i++) {
+      if (settings[i].fontStyle && settings[i].fontStyle.font.type &&
+        (settings[i].fontStyle.font.type === "custom")) {
+        // decode value and strip single quotes
+        customFamilies.push(decodeURIComponent(settings[i].fontStyle.font.family).replace(/'/g, ""));
+        // strip single quotes
+        customUrls.push(settings[i].fontStyle.font.url.replace(/'/g, "\\'"));
+      }
+    }
+
+    if (googleFamilies.length === 0 && customFamilies.length === 0) {
+      callback();
+    }
+    else {
+      // Load the fonts
+      for (var j = 0; j < customFamilies.length; j += 1) {
+        loadCustomFont(customFamilies[j], customUrls[j]);
+      }
+
+      if (googleFamilies.length > 0) {
+        loadGoogleFonts(googleFamilies, onGoogleFontsLoaded);
+      }
+      else {
+        callback();
+      }
+    }
   }
 
   function loadCustomFont(family, url, contentDoc) {
@@ -351,26 +405,23 @@ RiseVision.Common.Utilities = (function() {
     }
   }
 
-  function loadGoogleFont(family, contentDoc) {
-    var stylesheet = document.createElement("link"),
-      familyVal;
-
-    contentDoc = contentDoc || document;
-
-    stylesheet.setAttribute("rel", "stylesheet");
-    stylesheet.setAttribute("type", "text/css");
-
-    // split to account for family value containing a fallback (eg. Aladin,sans-serif)
-    familyVal = family.split(",")[0];
-
-    // strip possible single quotes
-    familyVal = familyVal.replace(/'/g, "");
-
-    stylesheet.setAttribute("href", "https://fonts.googleapis.com/css?family=" + familyVal);
-
-    if (stylesheet !== null) {
-      contentDoc.getElementsByTagName("head")[0].appendChild(stylesheet);
-    }
+  function loadGoogleFonts(families, cb) {
+    WebFont.load({
+      google: {
+        families: families
+      },
+      active: function() {
+        if (cb && typeof cb === "function") {
+          cb();
+        }
+      },
+      inactive: function() {
+        if (cb && typeof cb === "function") {
+          cb();
+        }
+      },
+      timeout: 2000
+    });
   }
 
   function preloadImages(urls) {
@@ -391,7 +442,7 @@ RiseVision.Common.Utilities = (function() {
     for (var i = 0; i < vars.length; i++) {
       pair = vars[i].split("=");
 
-      if (pair[0] == param) {
+      if (pair[0] == param) { // jshint ignore:line
         return decodeURIComponent(pair[1]);
       }
     }
@@ -415,19 +466,80 @@ RiseVision.Common.Utilities = (function() {
     return errorMessage;
   }
 
+  function unescapeHTML(html) {
+    var div = document.createElement("div");
+
+    div.innerHTML = html;
+
+    return div.textContent;
+  }
+
+  function hasInternetConnection(filePath, callback) {
+    var xhr = new XMLHttpRequest();
+
+    if (!filePath || !callback || typeof callback !== "function") {
+      return;
+    }
+
+    xhr.open("HEAD", filePath + "?cb=" + new Date().getTime(), false);
+
+    try {
+      xhr.send();
+
+      callback((xhr.status >= 200 && xhr.status < 304));
+
+    } catch (e) {
+      callback(false);
+    }
+  }
+
+  /**
+   * Check if chrome version is under a certain version
+   */
+  function isLegacy() {
+    var legacyVersion = 25;
+
+    var match = navigator.userAgent.match(/Chrome\/(\S+)/);
+    var version = match ? match[1] : 0;
+
+    if (version) {
+      version = parseInt(version.substring(0,version.indexOf(".")));
+
+      if (version <= legacyVersion) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Adds http:// or https:// protocol to url if the protocol is missing
+   */
+  function addProtocol(url, secure) {
+    if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+      url = ((secure) ? "https://" : "http://") + url;
+    }
+    return url;
+  }
+
   return {
+    addProtocol: addProtocol,
     getQueryParameter: getQueryParameter,
     getFontCssStyle:  getFontCssStyle,
     addCSSRules:      addCSSRules,
     loadFonts:        loadFonts,
     loadCustomFont:   loadCustomFont,
-    loadGoogleFont:   loadGoogleFont,
+    loadGoogleFonts:   loadGoogleFonts,
     preloadImages:    preloadImages,
-    getRiseCacheErrorMessage: getRiseCacheErrorMessage
+    getRiseCacheErrorMessage: getRiseCacheErrorMessage,
+    unescapeHTML: unescapeHTML,
+    hasInternetConnection: hasInternetConnection,
+    isLegacy: isLegacy
   };
 })();
 
-/* global gadgets */
+/* global WIDGET_COMMON_CONFIG */
 
 var RiseVision = RiseVision || {};
 RiseVision.Common = RiseVision.Common || {};
@@ -436,7 +548,8 @@ RiseVision.Common.LoggerUtils = (function() {
   "use strict";
 
    var displayId = "",
-    companyId = "";
+     companyId = "",
+     version = null;
 
   /*
    *  Private Methods
@@ -456,6 +569,10 @@ RiseVision.Common.LoggerUtils = (function() {
 
       json.company_id = companyId;
       json.display_id = displayId;
+
+      if (version) {
+        json.version = version;
+      }
 
       cb(json);
     }
@@ -479,7 +596,7 @@ RiseVision.Common.LoggerUtils = (function() {
       day = "0" + day;
     }
 
-    return year + month + day;
+    return "" + year + month + day;
   }
 
   /*
@@ -540,11 +657,16 @@ RiseVision.Common.LoggerUtils = (function() {
     displayId = display;
   }
 
+  function setVersion(value) {
+    version = value;
+  }
+
   return {
     "getInsertData": getInsertData,
     "getFileFormat": getFileFormat,
     "logEvent": logEvent,
-    "setIds": setIds
+    "setIds": setIds,
+    "setVersion": setVersion
   };
 })();
 
