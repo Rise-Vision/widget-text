@@ -59,7 +59,7 @@
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
           element.all(by.css("#mceu_31-body div")).then(function(elements) {
-            expect(elements.length).to.equal(21);
+            expect(elements.length).to.equal(806);
           });
         });
 
@@ -133,9 +133,9 @@
           expect(element(by.css(".mce-btn[aria-label='Underline']")).isDisplayed()).to.eventually.be.true;
         });
 
-        xit("should show bullet list", function() {
+        /*xit("should show bullet list", function() {
           expect(element(by.css(".mce-btn[aria-label='Bullet list']")).isDisplayed()).to.eventually.be.true;
-        });
+        });*/
 
         it("should show increase indent", function() {
           expect(element(by.css(".mce-btn[aria-label='Increase indent']")).isDisplayed()).to.eventually.be.true;
@@ -369,12 +369,12 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test<span style=\"font-family: Aclonica, sans-serif;\"> with a google font!</span></span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test<span style=\"font-family: 'Abril Fatface', sans-serif;\"> with a google font!</span></span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["Aclonica"],
+              "googleFonts": ["Abril Fatface"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
