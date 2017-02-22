@@ -58,15 +58,15 @@
         it("should load all fonts", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
-          element.all(by.css("#mceu_33-body div")).then(function(elements) {
-            expect(elements.length).to.equal(21);
+          element.all(by.css("#mceu_31-body div")).then(function(elements) {
+            expect(elements.length).to.equal(806);
           });
         });
 
         it("should show 'Add Custom Font' first", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
-          expect(element(by.css("#mceu_34-text")).getText()).to.eventually.equal("Add Custom Font");
+          expect(element(by.css("#mceu_32-text")).getText()).to.eventually.equal("Add Custom Font");
         });
 
         it("should show font family", function() {
@@ -133,9 +133,9 @@
           expect(element(by.css(".mce-btn[aria-label='Underline']")).isDisplayed()).to.eventually.be.true;
         });
 
-        it("should show bullet list", function() {
+        /*xit("should show bullet list", function() {
           expect(element(by.css(".mce-btn[aria-label='Bullet list']")).isDisplayed()).to.eventually.be.true;
-        });
+        });*/
 
         it("should show increase indent", function() {
           expect(element(by.css(".mce-btn[aria-label='Increase indent']")).isDisplayed()).to.eventually.be.true;
@@ -165,7 +165,7 @@
         url = browser.findElement(by.model("url"));
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_34-text")).click();
+        element(by.css("#mceu_32-text")).click();
       });
 
       describe("Modal visibility", function() {
@@ -224,10 +224,11 @@
         });
 
         it("Should apply single spacing by default to editor", function(){
-          browser.driver.switchTo().frame(0);
           browser.ignoreSynchronization = true;
 
-          element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+          browser.driver.switchTo().frame("ui-tinymce-0_ifr");
+
+          element(by.css(".mce-content-body")).sendKeys("This is a test");
 
           browser.driver.switchTo().defaultContent();
           browser.ignoreSynchronization = false;
@@ -235,7 +236,7 @@
           // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
           element(by.css(".mce-btn[aria-label='Source code']")).click();
 
-          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>");
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test</span></span></p>");
 
         });
 
@@ -245,19 +246,20 @@
 
         it("should set Line Height to Double in tool", function() {
           element(by.css(".mce-btn[aria-label='Line Height']")).click();
-          element(by.css("#mceu_35-text")).click();
-
+          element(by.css("#mceu_32-text")).click();
+          element(by.css(".mce-btn[aria-label='Line Height']")).click();
+          element(by.css("#mceu_33-text")).click();
           expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Double");
         });
 
         it("should apply double line height to editor", function() {
           element(by.css(".mce-btn[aria-label='Line Height']")).click();
-          element(by.css("#mceu_35-text")).click();
+          element(by.css("#mceu_33-text")).click();
 
           browser.driver.switchTo().frame(0);
           browser.ignoreSynchronization = true;
 
-          element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+          element(by.css(".mce-content-body")).sendKeys("This is a test");
 
           browser.driver.switchTo().defaultContent();
           browser.ignoreSynchronization = false;
@@ -265,7 +267,7 @@
           // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
           element(by.css(".mce-btn[aria-label='Source code']")).click();
 
-          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 2;\">This is a test</span></p>");
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"line-height: 2; font-size: 24px;\"><span style=\"line-height: 1;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test</span></span></span></p>");
 
         })
 
@@ -278,7 +280,7 @@
         var settings = {
           "params": {},
           "additionalParams": {
-            "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>",
+            "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test</span></span></p>",
             "customFonts": {
               "formats": "",
               "fonts": []
@@ -296,7 +298,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+        element(by.css(".mce-content-body")).sendKeys("This is a test");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;
@@ -314,7 +316,7 @@
           settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: \'my font name\', sans-serif;\"> with a custom font!</span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test<span style=\"font-family: 'my font name', sans-serif;\"> with a custom font!</span></span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}]
@@ -333,7 +335,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+        element(by.css(".mce-content-body")).sendKeys("This is a test");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;
@@ -341,7 +343,7 @@
         url = browser.findElement(by.model("url"));
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_34-text")).click();
+        element(by.css("#mceu_32-text")).click();
 
         url.sendKeys(customFontUrl);
         element(by.css(".custom-font .select")).click();
@@ -349,7 +351,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        element(by.css(".mce-content-body")).isDisplayed().sendKeys(" with a custom font!");
+        element(by.css(".mce-content-body")).sendKeys(" with a custom font!");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;
@@ -367,12 +369,12 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: Abel, sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test<span style=\"font-family: 'Abril Fatface', sans-serif;\"> with a google font!</span></span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["Abel"],
+              "googleFonts": ["Abril Fatface"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
@@ -385,7 +387,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        element(by.css(".mce-content-body")).isDisplayed().sendKeys("This is a test");
+        element(by.css(".mce-content-body")).sendKeys("This is a test");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;
@@ -396,7 +398,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        element(by.css(".mce-content-body")).isDisplayed().sendKeys(" with a google font!");
+        element(by.css(".mce-content-body")).sendKeys(" with a google font!");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;

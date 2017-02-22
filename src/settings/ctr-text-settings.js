@@ -130,8 +130,10 @@ angular.module("risevision.widget.text.settings")
                 addCustomFontsToDocument($scope.settings.additionalParams.customFonts.fonts);
 
                 // force fontselect and fontsize tools to select defaults
-                editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
-                editor.execCommand("FontSize", false, "24px");
+                if(!$scope.settings.additionalParams.data) {
+                  editor.execCommand("FontName", false, "verdana,geneva,sans-serif");
+                  editor.execCommand("FontSize", false, "24px");
+                }
 
                 // Applying no margin or padding for all paragraphs
                 editor.formatter.apply("paragraph");
