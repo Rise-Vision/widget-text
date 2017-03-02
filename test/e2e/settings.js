@@ -57,7 +57,6 @@
       describe("Font Family", function() {
         it("should load all fonts", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
-
           element.all(by.css("#mceu_31-body div")).then(function(elements) {
             expect(elements.length).to.equal(806);
           });
@@ -236,7 +235,7 @@
           // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
           element(by.css(".mce-btn[aria-label='Source code']")).click();
 
-          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test</span></span></p>");
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>");
 
         });
 
@@ -245,8 +244,6 @@
       describe("Change to double line height", function() {
 
         it("should set Line Height to Double in tool", function() {
-          element(by.css(".mce-btn[aria-label='Line Height']")).click();
-          element(by.css("#mceu_32-text")).click();
           element(by.css(".mce-btn[aria-label='Line Height']")).click();
           element(by.css("#mceu_33-text")).click();
           expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Double");
@@ -267,7 +264,7 @@
           // Arbitrarily clicking something to work around selenium web driver issue dropping sendKeys characters
           element(by.css(".mce-btn[aria-label='Source code']")).click();
 
-          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"line-height: 2; font-size: 24px;\"><span style=\"line-height: 1;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test</span></span></span></p>");
+          expect(element(by.model("settings.additionalParams.data")).getAttribute("value")).to.eventually.equal("<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 2;\">This is a test</span></p>");
 
         })
 
@@ -280,7 +277,7 @@
         var settings = {
           "params": {},
           "additionalParams": {
-            "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test</span></span></p>",
+            "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test</span></p>",
             "customFonts": {
               "formats": "",
               "fonts": []
@@ -316,7 +313,7 @@
           settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test<span style=\"font-family: 'my font name', sans-serif;\"> with a custom font!</span></span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'my font name', sans-serif;\"> with a custom font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": [{"family": "My font' name", "url": "https://my.custom.font/My%20font'%20name.otf"}]
@@ -369,7 +366,7 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px;\"><span style=\"line-height: 1; font-size: 24px;\"><span style=\"font-family: verdana, geneva, sans-serif;\">This is a test<span style=\"font-family: 'Abril Fatface', sans-serif;\"> with a google font!</span></span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'Abril Fatface', sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []

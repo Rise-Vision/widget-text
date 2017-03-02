@@ -37,11 +37,6 @@
   <script>window.angular || document.write(unescape("%3Cscript src='js/vendor/angular/angular.min.js' type='text/javascript'%3E%3C/script%3E"));
   </script>
 
-  <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-  <!-- if TinyMCE fails to load fallback to a local version -->
-  <script>window.tinymce || document.write(unescape("%3Cscript src='js/vendor/tinymce-dist/tinymce.min.js' type='text/javascript'%3E%3C/script%3E"));
-  </script>
-
 </head>
 <body ng-app="risevision.widget.text.settings" ng-controller="settingsController">
   <div class="container-fluid image-settings-fs">
@@ -133,6 +128,12 @@
   </script>
 
   <!-- build:js js/settings.min.js -->
+  <script src="components/tinymce/tinymce.js"></script>
+  <script src="components/tinymce/plugins/code/plugin.js"></script>
+  <script src="components/tinymce/plugins/colorpicker/plugin.js"></script>
+  <script src="components/tinymce/plugins/wordcount/plugin.js"></script>
+  <script src="components/tinymce/plugins/textcolor/plugin.js"></script>
+  <script src="components/tinymce/themes/modern/theme.js"></script>
   <script src="components/angular-translate/angular-translate.js"></script>
   <script src="components/angular-sanitize/angular-sanitize.js"></script>
   <script src="components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>

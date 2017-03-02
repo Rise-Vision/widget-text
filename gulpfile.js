@@ -139,7 +139,8 @@
   // ***** e2e Testing ***** //
   gulp.task("html:e2e:settings", factory.htmlE2E({
     files: "./src/settings.html",
-    e2eFontLoader: "../node_modules/widget-tester/mocks/web-font-loader-mock.js"
+    e2eFontLoader: "../node_modules/widget-tester/mocks/web-font-loader-mock.js",
+    e2etinymce: "components/tinymce-dist/tinymce.min.js"
   }));
 
   gulp.task("e2e:server:settings", ["config", "html:e2e:settings"], factory.testServer());
