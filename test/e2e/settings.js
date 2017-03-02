@@ -57,7 +57,7 @@
       describe("Font Family", function() {
         it("should load all fonts", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
-          element.all(by.css("#mceu_33-body div")).then(function(elements) {
+          element.all(by.css("#mceu_31-body div")).then(function(elements) {
             expect(elements.length).to.equal(806);
           });
         });
@@ -65,7 +65,7 @@
         it("should show 'Add Custom Font' first", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
 
-          expect(element(by.css("#mceu_34-text")).getText()).to.eventually.equal("Add Custom Font");
+          expect(element(by.css("#mceu_32-text")).getText()).to.eventually.equal("Add Custom Font");
         });
 
         it("should show font family", function() {
@@ -164,7 +164,7 @@
         url = browser.findElement(by.model("url"));
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_34-text")).click();
+        element(by.css("#mceu_32-text")).click();
       });
 
       describe("Modal visibility", function() {
@@ -245,13 +245,13 @@
 
         it("should set Line Height to Double in tool", function() {
           element(by.css(".mce-btn[aria-label='Line Height']")).click();
-          element(by.css("#mceu_35-text")).click();
+          element(by.css("#mceu_33-text")).click();
           expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Double");
         });
 
         it("should apply double line height to editor", function() {
           element(by.css(".mce-btn[aria-label='Line Height']")).click();
-          element(by.css("#mceu_35-text")).click();
+          element(by.css("#mceu_33-text")).click();
 
           browser.driver.switchTo().frame(0);
           browser.ignoreSynchronization = true;
@@ -340,7 +340,7 @@
         url = browser.findElement(by.model("url"));
 
         element(by.css(".mce-btn[aria-label='Font Family']")).click();
-        element(by.css("#mceu_34-text")).click();
+        element(by.css("#mceu_32-text")).click();
 
         url.sendKeys(customFontUrl);
         element(by.css(".custom-font .select")).click();
@@ -366,12 +366,12 @@
         var settings = {
             "params": {},
             "additionalParams": {
-              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: Abel, sans-serif;\"> with a google font!</span></span></p>",
+              "data": "<p style=\"margin: 0px;\"><span style=\"font-family: verdana, geneva, sans-serif; font-size: 24px; line-height: 1;\">This is a test<span style=\"font-family: 'Abril Fatface', sans-serif;\"> with a google font!</span></span></p>",
               "customFonts": {
                 "formats": "",
                 "fonts": []
               },
-              "googleFonts": ["Abel"],
+              "googleFonts": ["Abril Fatface"],
               "scroll": {
                 "by": "none",
                 "speed": "medium",
