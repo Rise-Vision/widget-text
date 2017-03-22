@@ -424,6 +424,13 @@ RiseVision.Common.Utilities = (function() {
     });
   }
 
+  function loadScript( src ) {
+    var script = document.createElement( "script" );
+
+    script.src = src;
+    document.body.appendChild( script );
+  }
+
   function preloadImages(urls) {
     var length = urls.length,
       images = [];
@@ -434,9 +441,18 @@ RiseVision.Common.Utilities = (function() {
     }
   }
 
+  /**
+   * Get the current URI query param
+   */
   function getQueryParameter(param) {
-    var query = window.location.search.substring(1),
-      vars = query.split("&"),
+    return getQueryStringParameter(param, window.location.search.substring(1));
+  }
+
+  /**
+   * Get the query parameter from a query string
+   */
+  function getQueryStringParameter(param, query) {
+    var vars = query.split("&"),
       pair;
 
     for (var i = 0; i < vars.length; i++) {
@@ -448,6 +464,25 @@ RiseVision.Common.Utilities = (function() {
     }
 
     return "";
+  }
+
+  /**
+   * Get date object from player version string
+   */
+  function getDateObjectFromPlayerVersionString(playerVersion) {
+    var reggie = /(\d{4})\.(\d{2})\.(\d{2})\.(\d{2})\.(\d{2})/;
+    var dateArray = reggie.exec(playerVersion);
+    if (dateArray) {
+      return new Date(
+        (+dateArray[1]),
+          (+dateArray[2])-1, // Careful, month starts at 0!
+        (+dateArray[3]),
+        (+dateArray[4]),
+        (+dateArray[5])
+      );
+    } else {
+      return;
+    }
   }
 
   function getRiseCacheErrorMessage(statusCode) {
@@ -524,18 +559,21 @@ RiseVision.Common.Utilities = (function() {
   }
 
   return {
-    addProtocol: addProtocol,
-    getQueryParameter: getQueryParameter,
-    getFontCssStyle:  getFontCssStyle,
-    addCSSRules:      addCSSRules,
-    loadFonts:        loadFonts,
-    loadCustomFont:   loadCustomFont,
-    loadGoogleFonts:   loadGoogleFonts,
-    preloadImages:    preloadImages,
+    addProtocol:              addProtocol,
+    getQueryParameter:        getQueryParameter,
+    getQueryStringParameter:  getQueryStringParameter,
+    getFontCssStyle:          getFontCssStyle,
+    addCSSRules:              addCSSRules,
+    loadFonts:                loadFonts,
+    loadCustomFont:           loadCustomFont,
+    loadGoogleFonts:          loadGoogleFonts,
+    loadScript:               loadScript,
+    preloadImages:            preloadImages,
     getRiseCacheErrorMessage: getRiseCacheErrorMessage,
-    unescapeHTML: unescapeHTML,
-    hasInternetConnection: hasInternetConnection,
-    isLegacy: isLegacy
+    unescapeHTML:             unescapeHTML,
+    hasInternetConnection:    hasInternetConnection,
+    isLegacy:                 isLegacy,
+    getDateObjectFromPlayerVersionString: getDateObjectFromPlayerVersionString
   };
 })();
 
@@ -697,8 +735,12 @@ RiseVision.Common.Logger = (function(utils) {
 
     xhr.open("POST", REFRESH_URL, true);
     xhr.onloadend = function() {
-      var resp = JSON.parse(xhr.response);
-
+      var resp = {};
+      try {
+        resp = JSON.parse(xhr.response);
+      } catch(e) {
+        console.warn("Can't refresh logger token - ", e.message);
+      }
       cb({ token: resp.access_token, refreshedAt: new Date() });
     };
 
@@ -755,6 +797,7 @@ RiseVision.Common.Logger = (function(utils) {
     "log": log
   };
 })(RiseVision.Common.LoggerUtils);
+
 /* jshint ignore:start */
 var _gaq = _gaq || [];
 
