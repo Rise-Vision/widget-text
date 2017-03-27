@@ -4,3 +4,4 @@ src/config/config.js
 node_modules/
 reports/
 tmp
+dist
