@@ -288,11 +288,13 @@ angular.module("risevision.widget.text.settings")
         angular.forEach($wrapper.find("span"), function(span) {
           var family = $(span).css("font-family");
           // remove single quotes (if applied) and fallback fonts
-          family = family.replace(/[']/g, "").split(",")[0];
+          if (family) {
+            family = family.replace(/[']/g, "").split(",")[0];
 
-          if (families.indexOf(family) === -1) {
-            // add font family to the list
-            families += family + ",";
+            if (families.indexOf(family) === -1) {
+              // add font family to the list
+              families += family + ",";
+            }
           }
         });
 
