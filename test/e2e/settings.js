@@ -308,6 +308,33 @@
         });
       });
 
+      it("Should correctly save settings with no data", function() {
+        var settings = {
+          "params": {},
+          "additionalParams": {
+            "data": "",
+            "customFonts": {
+              "formats": "",
+              "fonts": []
+            },
+            "googleFonts": [],
+            "scroll": {
+              "by": "none",
+              "speed": "medium",
+              "pause": 5,
+              "pud": 10
+            }
+          }
+        };
+
+        element(by.id("save")).click();
+
+        expect(browser.executeScript("return window.result")).to.eventually.deep.equal({
+          "params": "",
+          "additionalParams": JSON.stringify(settings.additionalParams)
+        });
+      });
+
       it("Should correctly save settings with a custom font", function () {
         var customFontUrl = "https://my.custom.font/My%20font'%20name.otf",
           settings = {
