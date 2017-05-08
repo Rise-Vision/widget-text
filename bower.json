@@ -18,11 +18,11 @@
     "test"
   ],
   "devDependencies": {
-    "angular-mocks": "~1.3.0",
+    "angular-mocks": "~1.4.x",
     "web-component-tester": "*"
   },
   "dependencies": {
-    "angular": "~1.3.0",
+    "angular": "~1.4.0",
     "angular-bootstrap": "~0.11.1",
     "auto-scroll": "https://github.com/Rise-Vision/auto-scroll.git#1.1.0",
     "gsap": "~1.18.2",
@@ -32,12 +32,12 @@
     "widget-common": "https://github.com/Rise-Vision/widget-common.git#3.4.4",
     "widget-settings-ui-components": "https://github.com/Rise-Vision/widget-settings-ui-components.git#1.2.12",
     "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git#0.4.3",
-    "tinymce": "4.5.2"
+    "tinymce": "4.5.7"
   },
   "resolutions": {
-    "angular": "~1.3.0",
+    "angular": "~1.4.0",
     "angular-bootstrap": "^0.13.0",
-    "angular-mocks": "~1.3.0",
+    "angular-mocks": "~1.4.x",
     "angular-sanitize": "~1.3.0",
     "angular-ui-router": "0.2.15",
     "gsap": "~1.13.2",

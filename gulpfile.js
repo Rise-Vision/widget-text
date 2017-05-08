@@ -35,10 +35,10 @@
       "./src/components/gsap/src/minified/plugins/CSSPlugin.min.js",
       "./src/components/gsap/src/minified/utils/Draggable.min.js",
       "./src/components/gsap/src/minified/plugins/ScrollToPlugin.min.js",
-      "./src/components/tinymce-dist/plugins/**/*",
-      "./src/components/tinymce-dist/skins/**/*",
-      "./src/components/tinymce-dist/themes/**/*",
-      "./src/components/tinymce-dist/tinymce*.js",
+      "./src/components/tinymce/plugins/**/*",
+      "./src/components/tinymce/skins/**/*",
+      "./src/components/tinymce/themes/**/*",
+      "./src/components/tinymce/tinymce*.js",
       "./src/components/angular/angular*.js",
       "./src/components/angular/*.gzip",
       "./src/components/angular/*.map",
@@ -139,8 +139,7 @@
   // ***** e2e Testing ***** //
   gulp.task("html:e2e:settings", factory.htmlE2E({
     files: "./src/settings.html",
-    e2eFontLoader: "../node_modules/widget-tester/mocks/web-font-loader-mock.js",
-    e2etinymce: "components/tinymce-dist/tinymce.min.js"
+    e2eFontLoader: "../node_modules/widget-tester/mocks/web-font-loader-mock.js"
   }));
 
   gulp.task("e2e:server:settings", ["config", "html:e2e:settings"], factory.testServer());
