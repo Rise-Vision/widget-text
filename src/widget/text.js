@@ -50,6 +50,8 @@ RiseVision.Text = (function(gadgets, WebFont) {
   }
 
   function _init() {
+    _logEvent({ "event": "start" });
+
     document.querySelector(".page").innerHTML = _additionalParams.data;
 
     _loadGoogleFonts(_additionalParams.googleFonts, function () {
