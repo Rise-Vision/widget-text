@@ -82,7 +82,6 @@ RiseVision.Text = (function(gadgets, WebFont) {
 
   function _done() {
     gadgets.rpc.call("", "rsevent_done", null, _prefs.getString("id"));
-    _logEvent({ "event": "done" });
   }
 
   /*
@@ -104,8 +103,6 @@ RiseVision.Text = (function(gadgets, WebFont) {
     if ($("#container").data("plugin_autoScroll")) {
       $("#container").data("plugin_autoScroll").play();
     }
-
-    _logEvent({ "event": "play"});
   }
 
   function pause() {
