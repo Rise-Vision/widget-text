@@ -58,7 +58,7 @@
         it("should load all fonts", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
           element.all(by.css("#mceu_31-body div")).then(function(elements) {
-            expect(elements.length).to.equal(807);
+            expect(elements.length).to.equal(846);
           });
         });
 
