@@ -37,7 +37,7 @@ git clone https://github.com/Rise-Vision/widget-text.git
 cd widget-text
 npm install
 bower install
-gulp build
+npm run build
 ```
 
 The source code for the Widget can be found in the `src` folder. This is where you will want to make your custom changes.
@@ -94,4 +94,4 @@ If you would like more information on developing applications for Rise Vision pl
 
 **Facilitator**
 
-[Donna Peplinskie](https://github.com/donnapep "Donna Peplinskie")
+[Stuart Lees](https://github.com/stulees "Stuart Lees")
