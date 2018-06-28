@@ -224,7 +224,8 @@
 
         it("Should apply single spacing by default to editor", function(){
           browser.ignoreSynchronization = true;
-          browser.driver.switchTo().frame("ui-tinymce-0");
+          browser.driver.switchTo().defaultContent();
+          browser.driver.switchTo().frame("ui-tinymce-0_ifr");
 
           element(by.css(".mce-content-body")).sendKeys("This is a test");
 
