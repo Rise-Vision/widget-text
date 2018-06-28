@@ -36,7 +36,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        expect(element(by.css(".mce-content-body")).getCssValue("width")).to.eventually.equal("1014px");
+        expect(element(by.css(".mce-content-body")).getCssValue("width")).to.eventually.equal("1024px");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;
@@ -58,7 +58,7 @@
         it("should load all fonts", function() {
           element(by.css(".mce-btn[aria-label='Font Family']")).click();
           element.all(by.css("#mceu_31-body div")).then(function(elements) {
-            expect(elements.length).to.equal(807);
+            expect(elements.length).to.be.above(800);
           });
         });
 
@@ -285,6 +285,7 @@
             "googleFonts": [],
             "scroll": {
               "by": "none",
+              "direction": "up",
               "speed": "medium",
               "pause": 5,
               "pud": 10
@@ -320,6 +321,7 @@
             "googleFonts": [],
             "scroll": {
               "by": "none",
+              "direction": "up",
               "speed": "medium",
               "pause": 5,
               "pud": 10
@@ -348,6 +350,7 @@
               "googleFonts": [],
               "scroll": {
                 "by": "none",
+                "direction": "up",
                 "speed": "medium",
                 "pause": 5,
                 "pud": 10
@@ -401,6 +404,7 @@
               "googleFonts": ["Abril Fatface"],
               "scroll": {
                 "by": "none",
+                "direction": "up",
                 "speed": "medium",
                 "pause": 5,
                 "pud": 10
