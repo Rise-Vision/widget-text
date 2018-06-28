@@ -36,7 +36,7 @@
         browser.driver.switchTo().frame(0);
         browser.ignoreSynchronization = true;
 
-        expect(element(by.css(".mce-content-body")).getCssValue("width")).to.eventually.equal("1024px");
+        expect(element(by.css(".mce-content-body")).getCssValue("width")).to.eventually.equal("1014px");
 
         browser.driver.switchTo().defaultContent();
         browser.ignoreSynchronization = false;
