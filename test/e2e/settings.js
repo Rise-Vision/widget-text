@@ -223,9 +223,9 @@
         });
 
         it("Should apply single spacing by default to editor", function(){
-          browser.ignoreSynchronization = true;
 
-          browser.driver.switchTo().frame("ui-tinymce-0_ifr");
+          browser.driver.switchTo().frame(0);
+          browser.ignoreSynchronization = true;
 
           element(by.css(".mce-content-body")).sendKeys("This is a test");
 
@@ -285,6 +285,7 @@
             "googleFonts": [],
             "scroll": {
               "by": "none",
+              "direction": "up",
               "speed": "medium",
               "pause": 5,
               "pud": 10
@@ -320,6 +321,7 @@
             "googleFonts": [],
             "scroll": {
               "by": "none",
+              "direction": "up",
               "speed": "medium",
               "pause": 5,
               "pud": 10
@@ -348,6 +350,7 @@
               "googleFonts": [],
               "scroll": {
                 "by": "none",
+                "direction": "up",
                 "speed": "medium",
                 "pause": 5,
                 "pud": 10
@@ -401,6 +404,7 @@
               "googleFonts": ["Abril Fatface"],
               "scroll": {
                 "by": "none",
+                "direction": "up",
                 "speed": "medium",
                 "pause": 5,
                 "pud": 10
