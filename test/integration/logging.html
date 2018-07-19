@@ -38,40 +38,12 @@
         spyCall = null,
         table = "text_events",
         params = {
-          "event": "play",
           "company_id": '"companyId"',
           "display_id": '"displayId"'
         };
 
       teardown(function() {
         RiseVision.Common.Logger.log.restore();
-      });
-
-      suite("play", function() {
-        test("should log the play event", function() {
-          spy = sinon.spy(RiseVision.Common.Logger, "log");
-
-          RiseVision.Text.play();
-
-          assert(spy.calledOnce);
-          assert(spy.calledWith(table, params));
-        });
-      });
-
-      suite("done", function() {
-        test("should log the done event", function() {
-          var spyCall = null;
-
-          spy = sinon.spy(RiseVision.Common.Logger, "log");
-          params.event = "done";
-
-          $("#container").trigger("done");
-
-          spyCall = RiseVision.Common.Logger.log.getCall(1);
-
-          assert.equal(spyCall.args[0], table);
-          assert.deepEqual(spyCall.args[1], params);
-        });
       });
 
       suite("errors", function() {
