@@ -49,9 +49,14 @@ RiseVision.Text = (function(gadgets, WebFont) {
 
   }
 
+  function _logConfiguration() {
+    _logEvent( { "event": "configuration" } );
+  }
+
   function _init() {
     document.querySelector(".page").innerHTML = _additionalParams.data;
 
+    _logConfiguration();
     _loadGoogleFonts(_additionalParams.googleFonts, function () {
       // load custom fonts
       $.each(_additionalParams.customFonts.fonts, function (index, font) {

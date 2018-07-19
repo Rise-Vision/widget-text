@@ -30,38 +30,63 @@
   <script src="../../src/components/auto-scroll/jquery.auto-scroll.js"></script>
   <script src="../../src/components/widget-common/dist/common.js"></script>
   <script src="../../src/widget/text.js"></script>
-  <script src="../../src/widget/main.js"></script>
 
   <script>
     suite("Logging", function () {
       var spy = null,
-        spyCall = null,
+        ready = false,
         table = "text_events",
         params = {
           "company_id": '"companyId"',
           "display_id": '"displayId"'
         };
 
-      teardown(function() {
-        RiseVision.Common.Logger.log.restore();
+      var check = function(done) {
+        if (ready) {
+          done();
+        }
+        else {
+          setTimeout(function() {
+            check(done)
+          }, 1000);
+        }
+      };
+
+      sinon.stub(RiseVision.Text, "setAdditionalParams", function (params) {
+        ready = true;
+
+        spy = sinon.spy(RiseVision.Common.Logger, "log");
+
+        // restore the function
+        RiseVision.Text.setAdditionalParams.restore();
+
+        // call it again with the params
+        RiseVision.Text.setAdditionalParams(params);
       });
 
-      suite("errors", function() {
-        test("should log the Google font not loaded error", function() {
-          spy = sinon.spy(RiseVision.Common.Logger, "log");
-          params.event = "error";
-          params.event_details = "Google font not loaded";
-          params.error_details = "Bitter";
+      suiteSetup(function (done) {
+        check(done);
+      });
 
-          RiseVision.Text.setAdditionalParams(window.gadget.settings.additionalParams);
+      suiteTeardown(function () {
+        spy.restore();
+      });
 
-          spyCall = RiseVision.Common.Logger.log.getCall(0);
+      test("should log the configuration event", function() {
+        params.event = "configuration";
 
-          assert.equal(spyCall.args[0], table);
-          assert.deepEqual(spyCall.args[1], params);
-        });
+        assert(spy.calledWith(table, params));
+      });
+
+      test("should log the Google font not loaded error", function() {
+        params.event = "error";
+        params.event_details = "Google font not loaded";
+        params.error_details = "Bitter";
+
+        assert(spy.calledWith(table, params));
       });
     });
   </script>
+  <script src="../../src/widget/main.js"></script>
 </body>
 </html>
