@@ -115,7 +115,7 @@ jobs:
       - restore_cache:
           key: node-cache-v3{{ checksum "package.json" }}
       - restore_cache:
-          key: aws-cache
+          key: aws-cache2
       - run: |
           STAGE_ENV="$(git log -1 --pretty=%B | grep '\[.*\]' |sed -e 's/.*\[\(.*\)\].*/\1/g')"
           if [ "$STAGE_ENV" != '' ]
@@ -144,7 +144,7 @@ jobs:
       - restore_cache:
           key: node-cache-v3{{ checksum "package.json" }}
       - restore_cache:
-          key: aws-cache
+          key: aws-cache2
       - run: nvm install 6.9.1 && nvm alias default 6.9.1
       - run: NODE_ENV=prod npm run build
       - run: |
@@ -177,7 +177,7 @@ jobs:
       - restore_cache:
           key: node-cache-v3{{ checksum "package.json" }}
       - restore_cache:
-          key: aws-cache
+          key: aws-cache2
       - run: echo Deploying version $(grep version package.json |grep -o '[0-9.]*') to $BUCKET_NAME
       - run: $awscli s3 ls s3://$BUCKET_NAME || ($awscli s3 mb s3://$BUCKET_NAME && $awscli s3api put-bucket-acl --bucket $BUCKET_NAME --grant-read 'uri="http://acs.amazonaws.com/groups/global/AllUsers"')
       - run: $awscli s3 sync ./dist s3://$BUCKET_NAME/$(grep version package.json |grep -o '[0-9.]*')/dist --delete --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
