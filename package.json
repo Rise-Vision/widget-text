@@ -39,6 +39,7 @@
     "jshint-stylish": "^2.1.0",
     "phantomjs": "^1.9.16",
     "run-sequence": "^0.3.2",
+    "tough-cookie": "^2.3.3",
     "uglify-js": "^2.6.0",
     "web-component-tester": "5.0.0",
     "webfontloader": "1.6.16",
