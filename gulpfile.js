@@ -83,7 +83,7 @@
         // Minify for production.
         usemin({
           css: [sourcemaps.init(), minifyCSS(), sourcemaps.write()],
-          js: [sourcemaps.init( {largeFile: true} ), uglify(), sourcemaps.write()]
+          js: [uglify()]
         }),
         // Don't minify for staging.
         usemin({})
