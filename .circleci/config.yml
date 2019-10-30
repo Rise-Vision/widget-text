@@ -4,7 +4,7 @@ jobs:
   preconditions:
     working_directory: ~/Rise-Vision/widget-text
     docker: &BUILDIMAGE
-      - image: jenkinsrise/cci-v2-transitional-widgets:8.9.4
+      - image: jenkinsrise/cci-v2-transitional-widgets:0.0.4
     steps:
       - checkout
       - run: |
@@ -26,11 +26,11 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: node-cache-v4-{{ checksum "package.json" }}
+          key: node-cache-v5-{{ checksum "package.json" }}
       - run: npm install
       - run: bower install
       - save_cache:
-          key: node-cache-v4-{{ checksum "package.json" }}
+          key: node-cache-v5-{{ checksum "package.json" }}
           paths:
             - ./node_modules
       - persist_to_workspace:
@@ -60,7 +60,7 @@ jobs:
       - attach_workspace:
           at: .
       - restore_cache:
-          key: node-cache-v4-{{ checksum "package.json" }}
+          key: node-cache-v5-{{ checksum "package.json" }}
       - run: NODE_ENV=dev npm run test
 
   build:
@@ -71,7 +71,7 @@ jobs:
       - attach_workspace:
           at: .
       - restore_cache:
-          key: node-cache-v4-{{ checksum "package.json" }}
+          key: node-cache-v5-{{ checksum "package.json" }}
       - run: |
           if [ "${CIRCLE_BRANCH}" != "master" ]; then
             NODE_ENV=test npm run build
