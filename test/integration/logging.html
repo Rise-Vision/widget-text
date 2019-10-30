@@ -73,9 +73,11 @@
       });
 
       test("should log the configuration event", function() {
+        var details = { event_details: {googleFonts: [ "Bitter", "Source Sans Pro"]}};
+
         params.event = "configuration";
 
-        assert(spy.calledWith(table, params));
+        assert(spy.calledWith(table, Object.assign( {}, params, details )));
       });
 
       test("should log the Google font not loaded error", function() {
