@@ -39,7 +39,6 @@
     "lodash": "^4.17.5",
     "jshint-stylish": "^2.1.0",
     "karma": "^3.0.0",
-    "phantomjs": "^1.9.16",
     "run-sequence": "^0.3.2",
     "tough-cookie": "^2.3.3",
     "uglify-js": "^2.6.0",
