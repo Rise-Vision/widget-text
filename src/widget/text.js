@@ -50,7 +50,7 @@ RiseVision.Text = (function(gadgets, WebFont) {
   }
 
   function _logConfiguration() {
-    _logEvent( { "event": "configuration" } );
+    _logEvent( { "event": "configuration", "event_details": JSON.stringify( { googleFonts: _additionalParams.googleFonts } ) } );
   }
 
   function _init() {

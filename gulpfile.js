@@ -75,10 +75,26 @@
       .pipe(jshint.reporter("fail"));
   });
 
-  gulp.task("source", ["lint"], function () {
+  gulp.task("source-settings", ["lint"], function () {
     var isProd = (env === "prod");
 
-    return gulp.src(htmlFiles)
+    return gulp.src("./src/settings.html")
+      .pipe(gulpif(isProd,
+        // Minify for production.
+        usemin({
+          css: [sourcemaps.init(), minifyCSS(), sourcemaps.write()],
+          js: [sourcemaps.init( {largeFile: true} ), uglify(), sourcemaps.write()]
+        }),
+        // Don't minify for staging.
+        usemin({})
+      ))
+      .pipe(gulp.dest("dist/"));
+  });
+
+  gulp.task("source-widget", ["lint"], function () {
+    var isProd = (env === "prod");
+
+    return gulp.src("./src/widget.html")
       .pipe(gulpif(isProd,
         // Minify for production.
         usemin({
@@ -131,7 +147,7 @@
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config", "bower-update"], ["source", "fonts", "i18n", "vendor"], ["unminify"], cb);
+    runSequence(["clean", "config", "bower-update"], ["source-settings", "source-widget", "fonts", "i18n", "vendor"], ["unminify"], cb);
   });
 
   gulp.task("webdriver_update", factory.webdriveUpdate());
