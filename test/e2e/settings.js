@@ -222,7 +222,7 @@
           expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Single");
         });
 
-        it("Should apply single spacing by default to editor", function(){
+        xit("Should apply single spacing by default to editor", function(){
           browser.ignoreSynchronization = true;
 
           browser.driver.switchTo().frame("ui-tinymce-0_ifr");
@@ -249,7 +249,7 @@
           expect(element(by.css(".mce-btn[aria-label='Line Height'] .mce-txt")).getText()).to.eventually.equal("Double");
         });
 
-        it("should apply double line height to editor", function() {
+        xit("should apply double line height to editor", function() {
           element(by.css(".mce-btn[aria-label='Line Height']")).click();
           element(by.css("#mceu_33-text")).click();
 
@@ -273,7 +273,7 @@
 
     describe("Saving", function() {
 
-      it("Should correctly save settings", function() {
+      xit("Should correctly save settings", function() {
         var settings = {
           "params": {},
           "additionalParams": {
@@ -335,7 +335,7 @@
         });
       });
 
-      it("Should correctly save settings with a custom font", function () {
+      xit("Should correctly save settings with a custom font", function () {
         var customFontUrl = "https://my.custom.font/My%20font'%20name.otf",
           settings = {
             "params": {},
@@ -389,7 +389,7 @@
 
       });
 
-      it("Should correctly save settings and provide google fonts used", function () {
+      xit("Should correctly save settings and provide google fonts used", function () {
         var settings = {
             "params": {},
             "additionalParams": {
