@@ -320,6 +320,7 @@
             "googleFonts": [],
             "scroll": {
               "by": "none",
+              "direction": "up",
               "speed": "medium",
               "pause": 5,
               "pud": 10
