@@ -26,12 +26,16 @@ RiseVision.Text = (function(gadgets, WebFont) {
         google: {
           families: fonts
         },
-        timeout: 2000,
+        timeout: 5000,
         active: function() {
           complete();
         },
         inactive: function() {
-          console.warn("No google fonts were loaded");
+          _logEvent({
+            "event": "error",
+            "event_details": "Google fonts were not loaded",
+            "error_details": JSON.stringify( { googleFonts: fonts } )
+          });
           complete();
         },
         fontinactive: function(familyName) {
