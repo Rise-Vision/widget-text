@@ -90,6 +90,7 @@ angular.module("risevision.widget.text.settings")
             "alignleft aligncenter alignright alignjustify | " +
             "bullist numlist indent outdent lineheight | " +
             "removeformat code",
+          browser_spellcheck: true,
           setup: function(editor) {
             // add the Line Height list box
             editor.addButton("lineheight", {
