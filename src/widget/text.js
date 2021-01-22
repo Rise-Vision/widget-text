@@ -31,11 +31,13 @@ RiseVision.Text = (function(gadgets, WebFont) {
           complete();
         },
         inactive: function() {
+          var errorDetails = JSON.stringify( { googleFonts: fonts } );
+
           _logEvent({
             "event": "error",
             "event_details": "Google fonts were not loaded",
-            "error_details": JSON.stringify( { googleFonts: fonts } )
-          });
+            "error_details": errorDetails
+          }, { severity: "error", errorCode: "E000000055", debugInfo: errorDetails });
           complete();
         },
         fontinactive: function(familyName) {
@@ -43,7 +45,7 @@ RiseVision.Text = (function(gadgets, WebFont) {
             "event": "error",
             "event_details": "Google font not loaded",
             "error_details": familyName
-          });
+          }, { severity: "error", errorCode: "E000000054", debugInfo: familyName } );
         }
       });
     }
@@ -54,7 +56,15 @@ RiseVision.Text = (function(gadgets, WebFont) {
   }
 
   function _logConfiguration() {
-    _logEvent( { "event": "configuration", "event_details": JSON.stringify( { googleFonts: _additionalParams.googleFonts } ) } );
+    var configParams = {
+      "event": "configuration",
+      "event_details": { googleFonts: _additionalParams.googleFonts }
+    };
+
+    _logEvent( {
+      "event": configParams.event,
+      "event_details": JSON.stringify( configParams.event_details )
+    }, { severity: "info", debugInfo: JSON.stringify( configParams ) } );
   }
 
   function _init() {
@@ -80,8 +90,12 @@ RiseVision.Text = (function(gadgets, WebFont) {
     return "text_events";
   }
 
-  function _logEvent(params) {
-    RiseVision.Common.LoggerUtils.logEvent(_getTableName(), params);
+  function _logEvent(params, endpointLoggingFields) {
+    if ( endpointLoggingFields ) {
+      endpointLoggingFields.eventApp = "widget-text";
+    }
+
+    RiseVision.Common.LoggerUtils.logEvent(_getTableName(), params, endpointLoggingFields);
   }
 
   function _ready() {
