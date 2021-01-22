@@ -8,6 +8,7 @@
   var del = require("del");
   var env = process.env.NODE_ENV || "prod";
   var factory = require("widget-tester").gulpTaskFactory;
+  var file = require("gulp-file");
   var gulp = require("gulp");
   var gulpif = require("gulp-if");
   var gutil = require("gulp-util");
@@ -73,6 +74,15 @@
       .pipe(jshint())
       .pipe(jshint.reporter("jshint-stylish"))
       .pipe(jshint.reporter("fail"));
+  });
+
+  gulp.task("version", function () {
+    var pkg = require("./package.json"),
+      str = '/* exported version */\n' +
+        'var version = "' + pkg.version + '";';
+
+    return file("version.js", str, {src: true})
+      .pipe(gulp.dest("./src/config/"));
   });
 
   gulp.task("source-settings", ["lint"], function () {
@@ -147,7 +157,7 @@
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config", "bower-update"], ["source-settings", "source-widget", "fonts", "i18n", "vendor"], ["unminify"], cb);
+    runSequence(["clean", "config", "bower-update", "version"], ["source-settings", "source-widget", "fonts", "i18n", "vendor"], ["unminify"], cb);
   });
 
   gulp.task("webdriver_update", factory.webdriveUpdate());
@@ -180,7 +190,7 @@
   });
 
   gulp.task("test", function(cb) {
-    runSequence("test:e2e", "test:integration", cb);
+    runSequence("version", "test:e2e", "test:integration", cb);
   });
 
   gulp.task("default", function(cb) {

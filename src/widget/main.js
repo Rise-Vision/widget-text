@@ -1,4 +1,4 @@
-/* global RiseVision, gadgets */
+/* global RiseVision, gadgets, version */
 
 (function (window, gadgets) {
   "use strict";
@@ -34,6 +34,7 @@
       }
 
       RiseVision.Common.LoggerUtils.setIds(companyId, displayId);
+      RiseVision.Common.LoggerUtils.setVersion( version );
 
       if (names[2] === "additionalParams") {
         additionalParams = JSON.parse(values[2]);

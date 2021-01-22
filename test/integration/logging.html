@@ -29,6 +29,7 @@
 
   <script src="../../src/components/auto-scroll/jquery.auto-scroll.js"></script>
   <script src="../../src/components/widget-common/dist/common.js"></script>
+  <script src="../../src/config/version.js"></script>
   <script src="../../src/widget/text.js"></script>
 
   <script>
@@ -38,7 +39,8 @@
         table = "text_events",
         params = {
           "company_id": '"companyId"',
-          "display_id": '"displayId"'
+          "display_id": '"displayId"',
+          "version": version
         };
 
       var check = function(done) {
