@@ -45,7 +45,7 @@ RiseVision.Text = (function(gadgets, WebFont) {
             "event": "error",
             "event_details": "Google font not loaded",
             "error_details": familyName
-          }, { severity: "error", errorCode: "E000000054", debugInfo: familyName } );
+          }, { severity: "error", errorCode: "E000000055", debugInfo: familyName } );
         }
       });
     }
