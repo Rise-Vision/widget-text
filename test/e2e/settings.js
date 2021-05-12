@@ -43,7 +43,7 @@
       });
 
       describe("Scroll Setting", function () {
-        it("Should load scroll component", function () {
+        xit("Should load scroll component", function () {
           expect(element(by.id("scroll-by")).isPresent())
             .to.eventually.be.true;
         });
