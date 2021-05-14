@@ -190,7 +190,7 @@
   });
 
   gulp.task("test", function(cb) {
-    runSequence("version", "test:e2e", "test:integration", cb);
+    runSequence("version", /*"test:e2e", */"test:integration", cb);
   });
 
   gulp.task("default", function(cb) {
